@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GameX/utils/utils.h>
+#include "GameX/utils/utils.h"
 
 namespace GameX {
 
@@ -14,9 +14,12 @@ class Application {
  public:
   Application(const ApplicationSettings &settings);
 
+  ~Application();
+
   GLFWwindow *Window() const {
     return window_;
   }
+
   grassland::vulkan::Core *Core() const {
     return core_.get();
   }
@@ -27,6 +30,7 @@ class Application {
   void Init();
 
   void Update();
+
   void Render();
 
   void Cleanup();

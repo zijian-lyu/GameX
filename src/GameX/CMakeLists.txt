@@ -7,6 +7,7 @@ add_executable(GameX main.cpp)
 
 add_subdirectory(utils)
 add_subdirectory(shaders)
+add_subdirectory(renderer)
 add_subdirectory(application)
 
 target_include_directories(GameX PUBLIC ${COMMON_INCLUDE_DIRS})
