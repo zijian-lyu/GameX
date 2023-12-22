@@ -1,14 +1,14 @@
 #pragma once
 
-#include "GameX/utils/utils.h"
+#include "GameX/utils/common.h"
 
 namespace GameX {
 struct Vertex {
-  glm::vec3 pos;
-  glm::vec3 color;
-  glm::vec2 texCoord;
-  glm::vec3 normal;
-  glm::vec3 tangent;
+  glm::vec3 pos{};
+  glm::vec3 color{};
+  glm::vec2 texCoord{};
+  glm::vec3 normal{};
+  glm::vec3 tangent{};
 
   static VkVertexInputBindingDescription GetBindingDescription() {
     VkVertexInputBindingDescription binding_description{};

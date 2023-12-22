@@ -1,8 +1,19 @@
-//
-// Created by zijian on 12/21/2023.
-//
+#pragma once
 
-#ifndef GAMEX_SCENE_H
-#define GAMEX_SCENE_H
+#include "GameX/renderer/object.h"
 
-#endif  // GAMEX_SCENE_H
+namespace GameX {
+class Scene {
+ public:
+  Scene(Renderer *renderer) : renderer_(renderer) {
+  }
+
+  grassland::vulkan::DescriptorPool *DescriptorPool() {
+    return descriptor_pool_.get();
+  }
+
+ private:
+  Renderer *renderer_;
+  std::unique_ptr<grassland::vulkan::DescriptorPool> descriptor_pool_;
+};
+}  // namespace GameX

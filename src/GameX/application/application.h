@@ -25,6 +25,10 @@ class Application {
     return core_.get();
   }
 
+  class Renderer *Renderer() const {
+    return renderer_.get();
+  }
+
   void Run();
 
  private:
@@ -36,9 +40,17 @@ class Application {
 
   void Cleanup();
 
+  void CreateCube();
+
   ApplicationSettings settings_;
 
   GLFWwindow *window_;
   std::unique_ptr<grassland::vulkan::Core> core_;
+
+  std::unique_ptr<class Renderer> renderer_;
+
+  Mesh cube_;
+  std::unique_ptr<StaticObject> static_cube_;
+  std::unique_ptr<DynamicObject> dynamic_cube_;
 };
 }  // namespace GameX

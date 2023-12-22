@@ -1,33 +1,34 @@
 #pragma once
 
+#include "GameX/renderer/geometry_buffer.h"
+#include "GameX/renderer/object.h"
+#include "GameX/renderer/scene.h"
 #include "GameX/utils/utils.h"
 
 namespace GameX {
 class Application;
+
 class Renderer {
  public:
   Renderer(Application *app) : app_(app) {
   }
 
-  void Init();
-
-  void Update();
-
-  void Render();
-
-  void Destroy();
-
   Application *App() const {
     return app_;
   }
 
-  grassland::vulkan::RenderPass *PropertyFilmRenderPass() const {
-    return property_film_render_pass_.get();
+  void RegisterSyncObject(grassland::vulkan::DynamicObject *sync_object) {
+    registered_sync_objects_.insert(sync_object);
   }
 
+  void UnregisterSyncObject(grassland::vulkan::DynamicObject *sync_object) {
+    registered_sync_objects_.erase(sync_object);
+  }
+
+  void SyncObjects() const;
+
  private:
-  void CreatePropertyFilmRenderPass();
   Application *app_;
-  std::unique_ptr<grassland::vulkan::RenderPass> property_film_render_pass_;
+  std::set<grassland::vulkan::DynamicObject *> registered_sync_objects_;
 };
 }  // namespace GameX

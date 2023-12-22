@@ -54,9 +54,12 @@ Application::Application(const GameX::ApplicationSettings &settings)
   core_settings.window = window_;
 
   core_ = std::make_unique<grassland::vulkan::Core>(core_settings);
+
+  renderer_ = std::make_unique<class Renderer>(this);
 }
 
 Application::~Application() {
+  renderer_.reset();
   core_.reset();
   glfwDestroyWindow(window_);
   glfwTerminate();
@@ -76,14 +79,14 @@ void Application::Run() {
 }
 
 void Application::Init() {
-  int frame_width, frame_height;
-  glfwGetFramebufferSize(window_, &frame_width, &frame_height);
+  CreateCube();
 }
 
 void Application::Update() {
 }
 
 void Application::Render() {
+  renderer_->SyncObjects();
   core_->BeginFrame();
 
   auto cmd_buffer = core_->CommandBuffer();
@@ -117,5 +120,30 @@ void Application::Render() {
 }
 
 void Application::Cleanup() {
+  static_cube_.reset();
+  dynamic_cube_.reset();
+}
+
+void Application::CreateCube() {
+  std::vector<Vertex> vertices = {
+      Vertex{{-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, 0.0f}},
+      Vertex{{-1.0f, -1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+      Vertex{{-1.0f, 1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
+      Vertex{{-1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 1.0f}},
+      Vertex{{1.0f, -1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},
+      Vertex{{1.0f, -1.0f, 1.0f}, {1.0f, 0.0f, 1.0f}},
+      Vertex{{1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, 0.0f}},
+      Vertex{{1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}},
+  };
+
+  std::vector<uint32_t> indices = {
+      0, 2, 1, 1, 2, 3, 4, 5, 6, 5, 7, 6, 0, 1, 5, 0, 5, 4,
+      2, 6, 7, 2, 7, 3, 0, 4, 6, 0, 6, 2, 1, 3, 7, 1, 7, 5,
+  };
+
+  cube_ = Mesh(vertices, indices);
+
+  static_cube_ = std::make_unique<StaticObject>(Renderer(), cube_);
+  dynamic_cube_ = std::make_unique<DynamicObject>(Renderer(), &cube_);
 }
 }  // namespace GameX

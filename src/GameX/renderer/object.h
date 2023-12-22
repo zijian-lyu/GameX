@@ -23,16 +23,17 @@ struct StaticObject : public Object {
 
 struct DynamicObject : public Object {
  public:
-  DynamicObject(Renderer *renderer, Mesh *mesh);
+  DynamicObject(Renderer *renderer, const Mesh *mesh);
+  ~DynamicObject();
   bool SyncData(VkCommandBuffer cmd_buffer);
   bool SyncData(std::function<void(VkCommandBuffer)> &func);
-  bool SyncData(VkCommandBuffer cmd_buffer, uint32_t image_index);
+  bool SyncData(VkCommandBuffer cmd_buffer, uint32_t frame_index);
   bool SyncData(std::function<void(VkCommandBuffer)> &func,
-                uint32_t image_index);
+                uint32_t frame_index);
 
  private:
   grassland::vulkan::DynamicBuffer<Vertex> vertex_buffer_;
   grassland::vulkan::StaticBuffer<uint32_t> index_buffer_;
-  Mesh *mesh_;
+  const Mesh *mesh_;
 };
 }  // namespace GameX

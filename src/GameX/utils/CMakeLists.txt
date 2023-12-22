@@ -2,7 +2,9 @@ set(LIB_NAME GameXUtils)
 
 file(GLOB_RECURSE SOURCES *.cpp *.h)
 
-add_library(${LIB_NAME} ${SOURCES})
+add_library(${LIB_NAME} ${SOURCES}
+        common.cpp
+        common.h)
 
 target_include_directories(${LIB_NAME} PUBLIC ${COMMON_INCLUDE_DIRS})
 target_link_libraries(${LIB_NAME} PUBLIC grassland)
