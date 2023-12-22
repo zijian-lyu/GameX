@@ -1,5 +1,7 @@
 #include "GameX/renderer/renderer.h"
 
+#include "GameX/application/application.h"
+
 namespace GameX {
 void Renderer::Init() {
   CreatePropertyFilmRenderPass();

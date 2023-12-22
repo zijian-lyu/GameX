@@ -1,5 +1,6 @@
 #include "GameX/renderer/prop_film.h"
 
+#include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
 
 namespace GameX {

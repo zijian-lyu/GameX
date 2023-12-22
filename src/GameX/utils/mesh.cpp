@@ -19,4 +19,20 @@ Mesh::Mesh(const std::vector<glm::vec3> &positions,
   }
   indices_ = indices;
 }
+
+std::vector<Vertex> &Mesh::Vertices() {
+  return vertices_;
+}
+
+const std::vector<Vertex> &Mesh::Vertices() const {
+  return vertices_;
+}
+
+std::vector<uint32_t> &Mesh::Indices() {
+  return indices_;
+}
+
+const std::vector<uint32_t> &Mesh::Indices() const {
+  return indices_;
+}
 }  // namespace GameX

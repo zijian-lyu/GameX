@@ -9,8 +9,46 @@ Application::Application(const GameX::ApplicationSettings &settings)
 
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+  if (settings_.width == -1 || settings_.height == -1) {
+    if (settings_.fullscreen) {
+      // Get the primary monitor
+      GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
+
+      // Get the video mode of the primary monitor
+      const GLFWvidmode *mode = glfwGetVideoMode(primaryMonitor);
+
+      settings_.width = mode->width;
+      settings_.height = mode->height;
+    } else {
+      settings_.width = 1280;
+      settings_.height = 720;
+    }
+  }
+
+  if (settings_.fullscreen) {
+    // Get the primary monitor
+    GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
+
+    // Get the video mode of the primary monitor
+    const GLFWvidmode *mode = glfwGetVideoMode(primaryMonitor);
+
+    // Set the window to be full screen borderless window
+    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+    // Create a borderless windowed mode window
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+  }
+
   window_ = glfwCreateWindow(settings_.width, settings_.height, "GameX",
                              nullptr, nullptr);
+
+  if (settings_.fullscreen) {
+    glfwSetWindowPos(window_, 0, 0);
+  }
 
   grassland::vulkan::CoreSettings core_settings;
   core_settings.window = window_;
@@ -60,7 +98,7 @@ void Application::Render() {
       VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
   // Clear frame_image_ to black
-  VkClearColorValue clear_color{0.0f, 0.0f, 0.0f, 1.0f};
+  VkClearColorValue clear_color{0.6f, 0.7f, 0.8f, 1.0f};
   VkImageSubresourceRange subresource_range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0,
                                             1};
 

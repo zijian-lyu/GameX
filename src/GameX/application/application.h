@@ -1,13 +1,14 @@
 #pragma once
 
+#include "GameX/renderer/renderer.h"
 #include "GameX/utils/utils.h"
 
 namespace GameX {
 
 struct ApplicationSettings {
   bool fullscreen{false};
-  int width{1280};
-  int height{720};
+  int width{-1};
+  int height{-1};
 };
 
 class Application {
@@ -36,6 +37,7 @@ class Application {
   void Cleanup();
 
   ApplicationSettings settings_;
+
   GLFWwindow *window_;
   std::unique_ptr<grassland::vulkan::Core> core_;
 };

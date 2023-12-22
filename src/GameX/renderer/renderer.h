@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GameX/application/application.h"
 #include "GameX/utils/utils.h"
 
 namespace GameX {
+class Application;
 class Renderer {
  public:
   Renderer(Application *app) : app_(app) {

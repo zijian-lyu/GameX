@@ -15,6 +15,14 @@ struct Mesh {
        glm::vec3 normal = glm::vec3(0.0f, 0.0f, 0.0f),
        glm::vec3 tangent = glm::vec3(0.0f, 0.0f, 0.0f));
 
+  std::vector<Vertex> &Vertices();
+
+  const std::vector<Vertex> &Vertices() const;
+
+  std::vector<uint32_t> &Indices();
+
+  const std::vector<uint32_t> &Indices() const;
+
  private:
   std::vector<Vertex> vertices_{};
   std::vector<uint32_t> indices_{};
