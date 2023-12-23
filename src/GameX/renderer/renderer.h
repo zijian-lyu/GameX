@@ -14,6 +14,8 @@ class Renderer {
  public:
   Renderer(Application *app);
 
+  ~Renderer();
+
   Application *App() const {
     return app_;
   }
@@ -42,6 +44,10 @@ class Renderer {
     return entity_descriptor_set_layout_.get();
   }
 
+  RenderPipeline *RenderPipeline() const {
+    return render_pipeline_.get();
+  }
+
   void SyncObjects() const;
 
  private:
@@ -49,6 +55,7 @@ class Renderer {
   void CreateAssetManager();
   void CreateCameraSetLayout();
   void CreateEntitySetLayout();
+  void CreateRenderPipeline();
 
   Application *app_;
   std::set<grassland::vulkan::DynamicObject *> registered_sync_objects_;
@@ -58,5 +65,6 @@ class Renderer {
       entity_descriptor_set_layout_;
   std::unique_ptr<grassland::vulkan::RenderPass> depth_render_pass_;
   std::unique_ptr<class AssetManager> asset_manager_;
+  std::unique_ptr<class RenderPipeline> render_pipeline_;
 };
 }  // namespace GameX

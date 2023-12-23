@@ -29,6 +29,10 @@ class Camera {
     glm::mat4 projection_matrix_;
   };
 
+  grassland::vulkan::DescriptorSet *DescriptorSet(int frame_index) const {
+    return descriptor_sets_[frame_index].get();
+  }
+
  private:
   Scene *scene_;
   std::unique_ptr<grassland::vulkan::DynamicBuffer<CameraData>> camera_buffer_;

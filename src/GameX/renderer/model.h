@@ -31,7 +31,7 @@ struct StaticModel : public Model {
   }
 
   uint32_t IndexCount() const override {
-    return index_buffer_.Size();
+    return index_buffer_.Length();
   }
 
  private:

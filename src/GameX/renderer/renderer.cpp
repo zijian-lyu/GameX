@@ -21,6 +21,15 @@ Renderer::Renderer(Application *app) : app_(app) {
   CreateAssetManager();
   CreateCameraSetLayout();
   CreateEntitySetLayout();
+  CreateRenderPipeline();
+}
+
+Renderer::~Renderer() {
+  render_pipeline_.reset();
+  entity_descriptor_set_layout_.reset();
+  camera_descriptor_set_layout_.reset();
+  asset_manager_.reset();
+  depth_render_pass_.reset();
 }
 
 void Renderer::CreateDepthRenderPass() {
@@ -77,6 +86,10 @@ void Renderer::CreateEntitySetLayout() {
   entity_descriptor_set_layout_ =
       std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->Core(),
                                                                bindings);
+}
+
+void Renderer::CreateRenderPipeline() {
+  render_pipeline_ = std::make_unique<class RenderPipeline>(this);
 }
 
 }  // namespace GameX

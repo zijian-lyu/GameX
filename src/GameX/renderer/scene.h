@@ -2,6 +2,7 @@
 
 #include "GameX/renderer/camera.h"
 #include "GameX/renderer/entity.h"
+#include "GameX/renderer/render_pipeline.h"
 
 namespace GameX {
 
@@ -43,6 +44,10 @@ class Scene {
 
   void DestroyEntity(Entity *entity) {
     entities_.erase(entity);
+  }
+
+  const std::set<Entity *> &Entities() const {
+    return entities_;
   }
 
  private:

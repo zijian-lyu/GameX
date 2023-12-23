@@ -8,7 +8,7 @@ layout(binding = 0, set = 0) uniform CameraData {
 }
 camera_data;
 
-layout(binding = 0, set = 1) uniform TransformData {
+layout(binding = 0, set = 1) uniform EntityData {
   mat4 model;
 }
 transform_data;

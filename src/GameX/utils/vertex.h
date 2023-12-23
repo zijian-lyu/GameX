@@ -4,7 +4,7 @@
 
 namespace GameX {
 struct Vertex {
-  glm::vec3 pos{};
+  glm::vec3 position{};
   glm::vec3 color{};
   glm::vec2 texCoord{};
   glm::vec3 normal{};
@@ -26,7 +26,7 @@ struct Vertex {
     attribute_descriptions[0].binding = 0;
     attribute_descriptions[0].location = 0;
     attribute_descriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-    attribute_descriptions[0].offset = offsetof(Vertex, pos);
+    attribute_descriptions[0].offset = offsetof(Vertex, position);
 
     attribute_descriptions[1].binding = 0;
     attribute_descriptions[1].location = 1;

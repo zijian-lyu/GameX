@@ -13,6 +13,14 @@ class Entity {
 
   ~Entity();
 
+  grassland::vulkan::DescriptorSet *DescriptorSet(int frame_index) const {
+    return descriptor_sets_[frame_index].get();
+  }
+
+  const class Model *Model() const {
+    return model_;
+  }
+
  private:
   class Scene *scene_;
   const class Model *model_;

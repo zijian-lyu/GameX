@@ -11,4 +11,5 @@ Scene::Scene(class Renderer *renderer, const SceneSettings &settings) {
   descriptor_pool_ = std::make_unique<grassland::vulkan::DescriptorPool>(
       renderer_->App()->Core(), descriptor_pool_settings);
 }
+
 }  // namespace GameX

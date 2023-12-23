@@ -6,8 +6,26 @@
 namespace GameX {
 class RenderPipeline {
  public:
-  RenderPipeline(class Renderer *renderer, int max_film = 1024)
-      : renderer_(renderer){};
+  RenderPipeline(class Renderer *renderer, int max_film = 1024);
+
+  struct Film {
+    std::unique_ptr<grassland::vulkan::Image> albedo_image;
+    std::unique_ptr<grassland::vulkan::Image> normal_image;
+    std::unique_ptr<grassland::vulkan::Image> position_image;
+    std::unique_ptr<grassland::vulkan::Image> depth_image;
+    std::unique_ptr<grassland::vulkan::Framebuffer> framebuffer;
+
+    VkExtent2D Extent() const {
+      return albedo_image->Extent();
+    }
+  };
+
+  std::unique_ptr<Film> CreateFilm(int width, int height);
+
+  void Render(VkCommandBuffer cmd_buffer,
+              const Scene &scene,
+              const Camera &cameras,
+              const Film &film);
 
  private:
   class Renderer *renderer_;
