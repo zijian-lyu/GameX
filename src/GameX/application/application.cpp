@@ -87,6 +87,22 @@ void Application::Cleanup() {
 }
 
 void Application::Update() {
+  double current_time = glfwGetTime();
+  static double last_time = current_time;
+  double delta_time = current_time - last_time;
+
+  static float omega = 0.0f;
+
+  static_entity_->SetEntitySettings(Entity::EntitySettings{
+      glm::translate(glm::mat4(1.0f), glm::vec3(-0.5, 0.0, 0.0)) *
+      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(0, 1, 0))});
+  dynamic_entity_->SetEntitySettings(Entity::EntitySettings{
+      glm::translate(glm::mat4(1.0f), glm::vec3(0.5, 0.0, 0.0)) *
+      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(0, 1, 0))});
+
+  omega += delta_time;
+
+  last_time = current_time;
 }
 
 void Application::Render() {
@@ -123,6 +139,52 @@ void Application::Render() {
   renderer_->RenderPipeline()->Render(cmd_buffer->Handle(), *scene_, *camera_,
                                       *film_);
 
+  auto output_image = film_->albedo_image.get();
+  // Blit output_image to frame_image_
+  VkImageBlit blit_region = {};
+  blit_region.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  blit_region.srcSubresource.layerCount = 1;
+  blit_region.srcOffsets[1].x = output_image->Extent().width;
+  blit_region.srcOffsets[1].y = output_image->Extent().height;
+  blit_region.srcOffsets[1].z = 1;
+  blit_region.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  blit_region.dstSubresource.layerCount = 1;
+  blit_region.dstOffsets[1].x = core_->SwapChain()->Extent().width;
+  blit_region.dstOffsets[1].y = core_->SwapChain()->Extent().height;
+  blit_region.dstOffsets[1].z = 1;
+
+  grassland::vulkan::TransitImageLayout(
+      cmd_buffer->Handle(), output_image->Handle(),
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+      VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_TRANSFER_READ_BIT,
+      VK_IMAGE_ASPECT_COLOR_BIT);
+  grassland::vulkan::TransitImageLayout(
+      cmd_buffer->Handle(), frame_image, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+      VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
+      VK_IMAGE_ASPECT_COLOR_BIT);
+
+  vkCmdBlitImage(cmd_buffer->Handle(), output_image->Handle(),
+                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, frame_image,
+                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit_region,
+                 VK_FILTER_NEAREST);
+
+  grassland::vulkan::TransitImageLayout(
+      cmd_buffer->Handle(), output_image->Handle(),
+      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT,
+      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_TRANSFER_READ_BIT,
+      VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+
+  grassland::vulkan::TransitImageLayout(
+      cmd_buffer->Handle(), frame_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_TRANSFER_BIT,
+      VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
+      VK_ACCESS_MEMORY_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+
   core_->EndFrame();
 }
 
@@ -143,7 +205,7 @@ void Application::CreateCube() {
       2, 6, 7, 2, 7, 3, 0, 4, 6, 0, 6, 2, 1, 3, 7, 1, 7, 5,
   };
 
-  cube_ = Mesh(vertices, indices);
+  cube_ = Mesh(renderer_->AssetManager()->GetAssetPath("models/cube.ply"));
 
   static_cube_ = std::make_unique<StaticModel>(Renderer(), cube_);
   dynamic_cube_ = std::make_unique<DynamicModel>(Renderer(), &cube_);

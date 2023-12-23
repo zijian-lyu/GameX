@@ -98,16 +98,20 @@ std::unique_ptr<RenderPipeline::Film> RenderPipeline::CreateFilm(int width,
                     static_cast<uint32_t>(height)};
   film->albedo_image = std::make_unique<grassland::vulkan::Image>(
       renderer_->App()->Core(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
-      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+          VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
   film->normal_image = std::make_unique<grassland::vulkan::Image>(
       renderer_->App()->Core(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
-      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+          VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
   film->position_image = std::make_unique<grassland::vulkan::Image>(
       renderer_->App()->Core(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
-      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+          VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
   film->depth_image = std::make_unique<grassland::vulkan::Image>(
       renderer_->App()->Core(), VK_FORMAT_D32_SFLOAT, extent,
-      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+          VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
       VK_IMAGE_ASPECT_DEPTH_BIT);
   film->framebuffer = std::make_unique<grassland::vulkan::Framebuffer>(
       renderer_->App()->Core(), extent, geometry_pass_render_pass_->Handle(),

@@ -33,6 +33,10 @@ class Camera {
     return descriptor_sets_[frame_index].get();
   }
 
+  void SetCameraData(const CameraData &data) {
+    camera_buffer_->At(0) = data;
+  }
+
  private:
   Scene *scene_;
   std::unique_ptr<grassland::vulkan::DynamicBuffer<CameraData>> camera_buffer_;

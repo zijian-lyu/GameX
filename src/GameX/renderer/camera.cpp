@@ -2,7 +2,6 @@
 
 #include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
-#include "glm/gtc/matrix_transform.hpp"
 
 namespace GameX {
 

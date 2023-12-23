@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameX/utils/vertex.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace GameX {
 struct Mesh {
@@ -16,6 +17,8 @@ struct Mesh {
        glm::vec2 texCoord = glm::vec2(0.0f, 0.0f),
        glm::vec3 normal = glm::vec3(0.0f, 0.0f, 0.0f),
        glm::vec3 tangent = glm::vec3(0.0f, 0.0f, 0.0f));
+
+  Mesh(const std::string &path);
 
   std::vector<Vertex> &Vertices();
 

@@ -50,5 +50,67 @@ struct Vertex {
 
     return attribute_descriptions;
   }
+
+  bool operator<(const Vertex &other) const {
+    if (position.x < other.position.x) {
+      return true;
+    } else if (position.x > other.position.x) {
+      return false;
+    } else if (position.y < other.position.y) {
+      return true;
+    } else if (position.y > other.position.y) {
+      return false;
+    } else if (position.z < other.position.z) {
+      return true;
+    } else if (position.z > other.position.z) {
+      return false;
+    } else if (normal.x < other.normal.x) {
+      return true;
+    } else if (normal.x > other.normal.x) {
+      return false;
+    } else if (normal.y < other.normal.y) {
+      return true;
+    } else if (normal.y > other.normal.y) {
+      return false;
+    } else if (normal.z < other.normal.z) {
+      return true;
+    } else if (normal.z > other.normal.z) {
+      return false;
+    } else if (texCoord.x < other.texCoord.x) {
+      return true;
+    } else if (texCoord.x > other.texCoord.x) {
+      return false;
+    } else if (texCoord.y < other.texCoord.y) {
+      return true;
+    } else if (texCoord.y > other.texCoord.y) {
+      return false;
+    } else if (tangent.x < other.tangent.x) {
+      return true;
+    } else if (tangent.x > other.tangent.x) {
+      return false;
+    } else if (tangent.y < other.tangent.y) {
+      return true;
+    } else if (tangent.y > other.tangent.y) {
+      return false;
+    } else if (tangent.z < other.tangent.z) {
+      return true;
+    } else if (tangent.z > other.tangent.z) {
+      return false;
+    } else if (color.x < other.color.x) {
+      return true;
+    } else if (color.x > other.color.x) {
+      return false;
+    } else if (color.y < other.color.y) {
+      return true;
+    } else if (color.y > other.color.y) {
+      return false;
+    } else if (color.z < other.color.z) {
+      return true;
+    } else if (color.z > other.color.z) {
+      return false;
+    } else {
+      return false;
+    }
+  }
 };
 }  // namespace GameX

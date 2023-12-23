@@ -21,6 +21,10 @@ class Entity {
     return model_;
   }
 
+  void SetEntitySettings(const EntitySettings &settings) {
+    entity_buffer_->At(0) = settings;
+  }
+
  private:
   class Scene *scene_;
   const class Model *model_;
