@@ -1,23 +1,23 @@
-#include "GameX/renderer/object.h"
+#include "GameX/renderer/model.h"
 
 #include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
 
 namespace GameX {
 
-Object::Object(Renderer *renderer) : renderer_(renderer) {
+Model::Model(Renderer *renderer) : renderer_(renderer) {
 }
 
-StaticObject::StaticObject(Renderer *renderer, const Mesh &mesh)
-    : Object(renderer) {
+StaticModel::StaticModel(Renderer *renderer, const Mesh &mesh)
+    : Model(renderer) {
   vertex_buffer_.Init(renderer_->App()->Core(), mesh.Vertices().size());
   vertex_buffer_.UploadContents(mesh.Vertices().data(), mesh.Vertices().size());
   index_buffer_.Init(renderer_->App()->Core(), mesh.Indices().size());
   index_buffer_.UploadContents(mesh.Indices().data(), mesh.Indices().size());
 }
 
-DynamicObject::DynamicObject(Renderer *renderer, const Mesh *mesh)
-    : Object(renderer), mesh_(mesh) {
+DynamicModel::DynamicModel(Renderer *renderer, const Mesh *mesh)
+    : Model(renderer), mesh_(mesh) {
   vertex_buffer_.Init(renderer_->App()->Core(), mesh->Vertices().size());
   vertex_buffer_.UploadContents(mesh->Vertices().data(),
                                 mesh->Vertices().size());
@@ -27,25 +27,25 @@ DynamicObject::DynamicObject(Renderer *renderer, const Mesh *mesh)
   renderer_->RegisterSyncObject(&vertex_buffer_);
 }
 
-DynamicObject::~DynamicObject() {
+DynamicModel::~DynamicModel() {
   renderer_->UnregisterSyncObject(&vertex_buffer_);
 }
 
-bool DynamicObject::SyncData(VkCommandBuffer cmd_buffer) {
+bool DynamicModel::SyncData(VkCommandBuffer cmd_buffer) {
   ;
   return SyncData(cmd_buffer, renderer_->App()->Core()->CurrentFrame());
 }
 
-bool DynamicObject::SyncData(std::function<void(VkCommandBuffer)> &func) {
+bool DynamicModel::SyncData(std::function<void(VkCommandBuffer)> &func) {
   return SyncData(func, renderer_->App()->Core()->CurrentFrame());
 }
 
-bool DynamicObject::SyncData(VkCommandBuffer cmd_buffer, uint32_t frame_index) {
+bool DynamicModel::SyncData(VkCommandBuffer cmd_buffer, uint32_t frame_index) {
   return vertex_buffer_.SyncData(cmd_buffer, frame_index);
 }
 
-bool DynamicObject::SyncData(std::function<void(VkCommandBuffer)> &func,
-                             uint32_t frame_index) {
+bool DynamicModel::SyncData(std::function<void(VkCommandBuffer)> &func,
+                            uint32_t frame_index) {
   return vertex_buffer_.SyncData(func, frame_index);
 }
 }  // namespace GameX

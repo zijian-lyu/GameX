@@ -143,7 +143,7 @@ void Application::CreateCube() {
 
   cube_ = Mesh(vertices, indices);
 
-  static_cube_ = std::make_unique<StaticObject>(Renderer(), cube_);
-  dynamic_cube_ = std::make_unique<DynamicObject>(Renderer(), &cube_);
+  static_cube_ = std::make_unique<StaticModel>(Renderer(), cube_);
+  dynamic_cube_ = std::make_unique<DynamicModel>(Renderer(), &cube_);
 }
 }  // namespace GameX

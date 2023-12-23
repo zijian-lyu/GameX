@@ -50,7 +50,7 @@ class Application {
   std::unique_ptr<class Renderer> renderer_;
 
   Mesh cube_;
-  std::unique_ptr<StaticObject> static_cube_;
-  std::unique_ptr<DynamicObject> dynamic_cube_;
+  std::unique_ptr<StaticModel> static_cube_;
+  std::unique_ptr<DynamicModel> dynamic_cube_;
 };
 }  // namespace GameX

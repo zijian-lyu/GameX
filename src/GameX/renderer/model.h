@@ -4,27 +4,27 @@
 
 namespace GameX {
 class Renderer;
-struct Object {
+struct Model {
  public:
-  Object(Renderer *renderer);
+  Model(Renderer *renderer);
 
  protected:
   Renderer *renderer_;
 };
 
-struct StaticObject : public Object {
+struct StaticModel : public Model {
  public:
-  StaticObject(Renderer *renderer, const Mesh &mesh);
+  StaticModel(Renderer *renderer, const Mesh &mesh);
 
  private:
   grassland::vulkan::StaticBuffer<Vertex> vertex_buffer_;
   grassland::vulkan::StaticBuffer<uint32_t> index_buffer_;
 };
 
-struct DynamicObject : public Object {
+struct DynamicModel : public Model {
  public:
-  DynamicObject(Renderer *renderer, const Mesh *mesh);
-  ~DynamicObject();
+  DynamicModel(Renderer *renderer, const Mesh *mesh);
+  ~DynamicModel();
   bool SyncData(VkCommandBuffer cmd_buffer);
   bool SyncData(std::function<void(VkCommandBuffer)> &func);
   bool SyncData(VkCommandBuffer cmd_buffer, uint32_t frame_index);
