@@ -80,6 +80,22 @@ void Application::Run() {
 
 void Application::Init() {
   CreateCube();
+  scene_ = std::make_unique<class Scene>(renderer_.get(), SceneSettings());
+  render_pipeline_ = std::make_unique<RenderPipeline>(renderer_.get());
+  camera_ = scene_->CreateCamera(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), 45.0f,
+                                 16.0f / 9.0f, 0.1f, 100.0f);
+  dynamic_entity_ = scene_->CreateEntity(dynamic_cube_.get());
+  static_entity_ = scene_->CreateEntity(static_cube_.get());
+}
+
+void Application::Cleanup() {
+  camera_.reset();
+  static_entity_.reset();
+  dynamic_entity_.reset();
+  render_pipeline_.reset();
+  scene_.reset();
+  static_cube_.reset();
+  dynamic_cube_.reset();
 }
 
 void Application::Update() {
@@ -117,11 +133,6 @@ void Application::Render() {
       VK_ACCESS_MEMORY_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
   core_->EndFrame();
-}
-
-void Application::Cleanup() {
-  static_cube_.reset();
-  dynamic_cube_.reset();
 }
 
 void Application::CreateCube() {

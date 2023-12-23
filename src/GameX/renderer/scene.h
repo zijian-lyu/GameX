@@ -1,6 +1,7 @@
 #pragma once
 
-#include "GameX/renderer/model.h"
+#include "GameX/renderer/camera.h"
+#include "GameX/renderer/entity.h"
 
 namespace GameX {
 
@@ -12,9 +13,9 @@ struct SceneSettings {
 
 class Scene {
  public:
-  Scene(Renderer *renderer, const SceneSettings &settings = {});
+  Scene(class Renderer *renderer, const SceneSettings &settings = {});
 
-  Renderer *Renderer() {
+  class Renderer *Renderer() {
     return renderer_;
   }
 
@@ -22,16 +23,32 @@ class Scene {
     return descriptor_pool_.get();
   }
 
-  grassland::vulkan::DescriptorSetLayout *CameraDescriptorSetLayout() {
-    return camera_descriptor_set_layout_.get();
+  template <class... Args>
+  std::unique_ptr<Camera> CreateCamera(Args &&...args) {
+    auto camera = std::make_unique<Camera>(this, std::forward<Args>(args)...);
+    cameras_.insert(camera.get());
+    return camera;
+  }
+
+  template <class... Args>
+  std::unique_ptr<Entity> CreateEntity(Args &&...args) {
+    auto entity = std::make_unique<Entity>(this, std::forward<Args>(args)...);
+    entities_.insert(entity.get());
+    return entity;
+  }
+
+  void DestroyCamera(Camera *camera) {
+    cameras_.erase(camera);
+  }
+
+  void DestroyEntity(Entity *entity) {
+    entities_.erase(entity);
   }
 
  private:
-  void CreateCameraSetLayout();
-
   class Renderer *renderer_;
   std::unique_ptr<grassland::vulkan::DescriptorPool> descriptor_pool_;
-  std::unique_ptr<grassland::vulkan::DescriptorSetLayout>
-      camera_descriptor_set_layout_;
+  std::set<Camera *> cameras_;
+  std::set<Entity *> entities_;
 };
 }  // namespace GameX

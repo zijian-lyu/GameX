@@ -8,6 +8,12 @@ struct Model {
  public:
   Model(Renderer *renderer);
 
+  virtual grassland::vulkan::Buffer *VertexBuffer(int frame_index) const = 0;
+
+  virtual grassland::vulkan::Buffer *IndexBuffer(int frame_index) const = 0;
+
+  virtual uint32_t IndexCount() const = 0;
+
  protected:
   Renderer *renderer_;
 };
@@ -15,6 +21,18 @@ struct Model {
 struct StaticModel : public Model {
  public:
   StaticModel(Renderer *renderer, const Mesh &mesh);
+
+  grassland::vulkan::Buffer *VertexBuffer(int frame_index) const override {
+    return vertex_buffer_.GetBuffer(frame_index);
+  }
+
+  grassland::vulkan::Buffer *IndexBuffer(int frame_index) const override {
+    return index_buffer_.GetBuffer(frame_index);
+  }
+
+  uint32_t IndexCount() const override {
+    return index_buffer_.Size();
+  }
 
  private:
   grassland::vulkan::StaticBuffer<Vertex> vertex_buffer_;
@@ -30,6 +48,18 @@ struct DynamicModel : public Model {
   bool SyncData(VkCommandBuffer cmd_buffer, uint32_t frame_index);
   bool SyncData(std::function<void(VkCommandBuffer)> &func,
                 uint32_t frame_index);
+
+  grassland::vulkan::Buffer *VertexBuffer(int frame_index) const override {
+    return vertex_buffer_.GetBuffer(frame_index);
+  }
+
+  grassland::vulkan::Buffer *IndexBuffer(int frame_index) const override {
+    return index_buffer_.GetBuffer(frame_index);
+  }
+
+  uint32_t IndexCount() const override {
+    return mesh_->Indices().size();
+  }
 
  private:
   grassland::vulkan::DynamicBuffer<Vertex> vertex_buffer_;

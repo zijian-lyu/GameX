@@ -14,6 +14,8 @@ class Camera {
          const float near_z = 0.1f,
          const float far_z = 100.0f);
 
+  ~Camera();
+
   void Init(Scene *scene,
             const glm::vec3 eye = {},
             const glm::vec3 center = {},
@@ -28,8 +30,10 @@ class Camera {
   };
 
  private:
+  Scene *scene_;
   std::unique_ptr<grassland::vulkan::DynamicBuffer<CameraData>> camera_buffer_;
-  std::unique_ptr<grassland::vulkan::DescriptorSet> descriptor_set_;
+  std::vector<std::unique_ptr<grassland::vulkan::DescriptorSet>>
+      descriptor_sets_;
 };
 
 }  // namespace GameX

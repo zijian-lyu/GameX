@@ -19,6 +19,8 @@ void Renderer::SyncObjects() const {
 Renderer::Renderer(Application *app) : app_(app) {
   CreateDepthRenderPass();
   CreateAssetManager();
+  CreateCameraSetLayout();
+  CreateEntitySetLayout();
 }
 
 void Renderer::CreateDepthRenderPass() {
@@ -31,7 +33,7 @@ void Renderer::CreateDepthRenderPass() {
   attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
   attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
   attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  attachments[0].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+  attachments[0].finalLayout = VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL;
 
   std::vector<VkAttachmentReference> color_attachment_references;
   std::optional<VkAttachmentReference> depth_attachment_reference;
@@ -47,6 +49,34 @@ void Renderer::CreateDepthRenderPass() {
 
 void Renderer::CreateAssetManager() {
   asset_manager_ = std::make_unique<class AssetManager>(this);
+}
+
+void Renderer::CreateCameraSetLayout() {
+  std::vector<VkDescriptorSetLayoutBinding> bindings;
+  bindings.resize(1);
+  bindings[0].binding = 0;
+  bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  bindings[0].descriptorCount = 1;
+  bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+  bindings[0].pImmutableSamplers = nullptr;
+
+  camera_descriptor_set_layout_ =
+      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->Core(),
+                                                               bindings);
+}
+
+void Renderer::CreateEntitySetLayout() {
+  std::vector<VkDescriptorSetLayoutBinding> bindings;
+  bindings.resize(1);
+  bindings[0].binding = 0;
+  bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  bindings[0].descriptorCount = 1;
+  bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+  bindings[0].pImmutableSamplers = nullptr;
+
+  entity_descriptor_set_layout_ =
+      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->Core(),
+                                                               bindings);
 }
 
 }  // namespace GameX

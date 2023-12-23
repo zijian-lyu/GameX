@@ -29,6 +29,10 @@ class Application {
     return renderer_.get();
   }
 
+  class Scene *Scene() const {
+    return scene_.get();
+  }
+
   void Run();
 
  private:
@@ -52,5 +56,12 @@ class Application {
   Mesh cube_;
   std::unique_ptr<StaticModel> static_cube_;
   std::unique_ptr<DynamicModel> dynamic_cube_;
+
+  std::unique_ptr<class Scene> scene_;
+  std::unique_ptr<Camera> camera_;
+  std::unique_ptr<Entity> static_entity_;
+  std::unique_ptr<Entity> dynamic_entity_;
+
+  std::unique_ptr<RenderPipeline> render_pipeline_;
 };
 }  // namespace GameX
