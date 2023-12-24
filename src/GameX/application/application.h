@@ -62,6 +62,10 @@ class Application {
   std::unique_ptr<Entity> static_entity_;
   std::unique_ptr<Entity> dynamic_entity_;
 
+  std::unique_ptr<AmbientLight> ambient_light_;
+
+  std::unique_ptr<DirectionalLight> directional_light_;
+
   std::unique_ptr<RenderPipeline::Film> film_;
 };
 }  // namespace GameX

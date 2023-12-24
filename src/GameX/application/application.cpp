@@ -73,12 +73,23 @@ void Application::Init() {
                                  16.0f / 9.0f, 0.1f, 100.0f);
   dynamic_entity_ = scene_->CreateEntity(dynamic_cube_.get());
   static_entity_ = scene_->CreateEntity(static_cube_.get());
-  film_ = renderer_->RenderPipeline()->CreateFilm(settings_.width,
-                                                  settings_.height);
+
+  ambient_light_ = scene_->CreateLight<AmbientLight>(
+      AmbientLight::AmbientLightData{glm::vec3(1.0f, 1.0f, 1.0f), 0.5f});
+
+  directional_light_ = scene_->CreateLight<DirectionalLight>(
+      DirectionalLight::DirectionalLightData{
+          glm::vec3(1.0f, 1.0f, 1.0f), 0.5f,
+          glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f))});
+
+  film_ = renderer_->RenderPipeline()->CreateFilm(settings_.width * 2,
+                                                  settings_.height * 2);
 }
 
 void Application::Cleanup() {
   film_.reset();
+  directional_light_.reset();
+  ambient_light_.reset();
   static_entity_.reset();
   dynamic_entity_.reset();
   camera_.reset();
@@ -96,12 +107,14 @@ void Application::Update() {
 
   static_entity_->SetEntitySettings(Entity::EntitySettings{
       glm::translate(glm::mat4(1.0f), glm::vec3(-0.5, 0.0, 0.0)) *
-      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(1, 0, 0)) *
+      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(1, 1, 1)) *
       glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5))});
   dynamic_entity_->SetEntitySettings(Entity::EntitySettings{
       glm::translate(glm::mat4(1.0f), glm::vec3(0.5, 0.0, 0.0)) *
-      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(1, 0, 0)) *
+      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(1, -1, -1)) *
       glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5))});
+
+  dynamic_cube_->SyncMeshData();
 
   omega += delta_time;
 
@@ -142,7 +155,7 @@ void Application::Render() {
   renderer_->RenderPipeline()->Render(cmd_buffer->Handle(), *scene_, *camera_,
                                       *film_);
 
-  auto output_image = film_->position_image.get();
+  auto output_image = film_->output_image.get();
   // Blit output_image to frame_image_
   VkImageBlit blit_region = {};
   blit_region.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -208,10 +221,14 @@ void Application::CreateCube() {
       2, 6, 7, 2, 7, 3, 0, 4, 6, 0, 6, 2, 1, 3, 7, 1, 7, 5,
   };
 
-  cube_ = Mesh(renderer_->AssetManager()->GetAssetPath("models/cylinder.obj"));
+  cube_ = Mesh(renderer_->AssetManager()->GetAssetPath("models/cube.obj"));
 
   static_cube_ = std::make_unique<StaticModel>(Renderer(), cube_);
   dynamic_cube_ = std::make_unique<DynamicModel>(Renderer(), &cube_);
+
+  for (auto &vertex : cube_.Vertices()) {
+    vertex.color = vertex.position + 0.5f;
+  }
 }
 
 void Application::Run() {

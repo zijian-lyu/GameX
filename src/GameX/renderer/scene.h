@@ -2,13 +2,14 @@
 
 #include "GameX/renderer/camera.h"
 #include "GameX/renderer/entity.h"
+#include "GameX/renderer/light.h"
 #include "GameX/renderer/render_pipeline.h"
 
 namespace GameX {
 
 struct SceneSettings {
   int max_objects = 1000;
-  int max_lights = 100;
+  int max_ambient_light = 100;
   int max_cameras = 100;
 };
 
@@ -38,6 +39,13 @@ class Scene {
     return entity;
   }
 
+  template <class LightType, class... Args>
+  std::unique_ptr<LightType> CreateLight(Args &&...args) {
+    auto light = std::make_unique<LightType>(this, std::forward<Args>(args)...);
+    lights_.insert(light.get());
+    return light;
+  }
+
   void DestroyCamera(Camera *camera) {
     cameras_.erase(camera);
   }
@@ -46,8 +54,16 @@ class Scene {
     entities_.erase(entity);
   }
 
+  void DestroyLight(Light *light) {
+    lights_.erase(light);
+  }
+
   const std::set<Entity *> &Entities() const {
     return entities_;
+  }
+
+  const std::set<Light *> &Lights() const {
+    return lights_;
   }
 
  private:
@@ -55,5 +71,6 @@ class Scene {
   std::unique_ptr<grassland::vulkan::DescriptorPool> descriptor_pool_;
   std::set<Camera *> cameras_;
   std::set<Entity *> entities_;
+  std::set<Light *> lights_;
 };
 }  // namespace GameX

@@ -48,4 +48,9 @@ bool DynamicModel::SyncData(std::function<void(VkCommandBuffer)> &func,
                             uint32_t frame_index) {
   return vertex_buffer_.SyncData(func, frame_index);
 }
+
+void DynamicModel::SyncMeshData() {
+  vertex_buffer_.UploadContents(mesh_->Vertices().data(),
+                                mesh_->Vertices().size());
+}
 }  // namespace GameX

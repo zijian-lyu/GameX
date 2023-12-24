@@ -21,10 +21,14 @@ Renderer::Renderer(Application *app) : app_(app) {
   CreateAssetManager();
   CreateCameraSetLayout();
   CreateEntitySetLayout();
+  CreateAmbientLightSetLayout();
+  CreateDirectionalLightSetLayout();
   CreateRenderPipeline();
 }
 
 Renderer::~Renderer() {
+  directional_light_descriptor_set_layout_.reset();
+  ambient_light_descriptor_set_layout_.reset();
   render_pipeline_.reset();
   entity_descriptor_set_layout_.reset();
   camera_descriptor_set_layout_.reset();
@@ -84,6 +88,34 @@ void Renderer::CreateEntitySetLayout() {
   bindings[0].pImmutableSamplers = nullptr;
 
   entity_descriptor_set_layout_ =
+      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->Core(),
+                                                               bindings);
+}
+
+void Renderer::CreateAmbientLightSetLayout() {
+  std::vector<VkDescriptorSetLayoutBinding> bindings;
+  bindings.resize(1);
+  bindings[0].binding = 0;
+  bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  bindings[0].descriptorCount = 1;
+  bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+  bindings[0].pImmutableSamplers = nullptr;
+
+  ambient_light_descriptor_set_layout_ =
+      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->Core(),
+                                                               bindings);
+}
+
+void Renderer::CreateDirectionalLightSetLayout() {
+  std::vector<VkDescriptorSetLayoutBinding> bindings;
+  bindings.resize(1);
+  bindings[0].binding = 0;
+  bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  bindings[0].descriptorCount = 1;
+  bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+  bindings[0].pImmutableSamplers = nullptr;
+
+  directional_light_descriptor_set_layout_ =
       std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->Core(),
                                                                bindings);
 }

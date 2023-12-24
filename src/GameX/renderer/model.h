@@ -61,6 +61,8 @@ struct DynamicModel : public Model {
     return mesh_->Indices().size();
   }
 
+  void SyncMeshData();
+
  private:
   grassland::vulkan::DynamicBuffer<Vertex> vertex_buffer_;
   grassland::vulkan::StaticBuffer<uint32_t> index_buffer_;
