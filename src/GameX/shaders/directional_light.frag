@@ -23,6 +23,9 @@ void main() {
   float NdotL = max(dot(normalize(subpassLoad(normal_input).rgb),
                         directional_light.direction),
                     0.0);
+  if (NdotL < 1e-3) {
+    discard;
+  }
   output_color = vec4(NdotL * subpassLoad(albedo_input).rgb *
                           directional_light.color * directional_light.intensity,
                       1.0);

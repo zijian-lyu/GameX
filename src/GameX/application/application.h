@@ -6,7 +6,7 @@
 namespace GameX {
 
 struct ApplicationSettings {
-  bool fullscreen{false};
+  bool fullscreen{true};
   int width{-1};
   int height{-1};
 };

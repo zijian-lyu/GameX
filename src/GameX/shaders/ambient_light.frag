@@ -22,4 +22,8 @@ void main() {
   output_color = vec4(subpassLoad(albedo_input).rgb * ambient_light.color *
                           ambient_light.intensity,
                       1.0);
+
+  if (max(output_color.r, max(output_color.g, output_color.b)) < 1e-3) {
+    discard;
+  }
 }

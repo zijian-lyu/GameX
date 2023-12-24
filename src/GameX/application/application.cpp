@@ -52,7 +52,6 @@ Application::Application(const GameX::ApplicationSettings &settings)
 
   grassland::vulkan::CoreSettings core_settings;
   core_settings.window = window_;
-  core_settings.device_index = 0;
 
   core_ = std::make_unique<grassland::vulkan::Core>(core_settings);
 
@@ -82,8 +81,8 @@ void Application::Init() {
           glm::vec3(1.0f, 1.0f, 1.0f), 0.5f,
           glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f))});
 
-  film_ = renderer_->RenderPipeline()->CreateFilm(settings_.width * 2,
-                                                  settings_.height * 2);
+  film_ = renderer_->RenderPipeline()->CreateFilm(settings_.width,
+                                                  settings_.height);
 }
 
 void Application::Cleanup() {
