@@ -52,6 +52,7 @@ Application::Application(const GameX::ApplicationSettings &settings)
 
   grassland::vulkan::CoreSettings core_settings;
   core_settings.window = window_;
+  core_settings.device_index = 0;
 
   core_ = std::make_unique<grassland::vulkan::Core>(core_settings);
 
@@ -95,10 +96,12 @@ void Application::Update() {
 
   static_entity_->SetEntitySettings(Entity::EntitySettings{
       glm::translate(glm::mat4(1.0f), glm::vec3(-0.5, 0.0, 0.0)) *
-      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(0, 1, 0))});
+      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(1, 0, 0)) *
+      glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5))});
   dynamic_entity_->SetEntitySettings(Entity::EntitySettings{
       glm::translate(glm::mat4(1.0f), glm::vec3(0.5, 0.0, 0.0)) *
-      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(0, 1, 0))});
+      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(1, 0, 0)) *
+      glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5))});
 
   omega += delta_time;
 
@@ -139,7 +142,7 @@ void Application::Render() {
   renderer_->RenderPipeline()->Render(cmd_buffer->Handle(), *scene_, *camera_,
                                       *film_);
 
-  auto output_image = film_->albedo_image.get();
+  auto output_image = film_->position_image.get();
   // Blit output_image to frame_image_
   VkImageBlit blit_region = {};
   blit_region.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -205,7 +208,7 @@ void Application::CreateCube() {
       2, 6, 7, 2, 7, 3, 0, 4, 6, 0, 6, 2, 1, 3, 7, 1, 7, 5,
   };
 
-  cube_ = Mesh(renderer_->AssetManager()->GetAssetPath("models/cube.ply"));
+  cube_ = Mesh(renderer_->AssetManager()->GetAssetPath("models/cylinder.obj"));
 
   static_cube_ = std::make_unique<StaticModel>(Renderer(), cube_);
   dynamic_cube_ = std::make_unique<DynamicModel>(Renderer(), &cube_);

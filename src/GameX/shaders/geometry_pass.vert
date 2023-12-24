@@ -21,14 +21,16 @@ camera_data;
 layout(binding = 0, set = 1) uniform EntityData {
   mat4 model;
 }
-transform_data;
+entity_data;
 
 void main() {
-  gl_Position = camera_data.proj * camera_data.view * transform_data.model *
-                vec4(position, 1.0);
-  frag_position = vec3(transform_data.model * vec4(position, 1.0));
+  frag_position = vec3(entity_data.model * vec4(position, 1.0));
   frag_color = color;
   frag_texcoord = texcoord;
-  frag_normal = normal;
+  frag_normal = normalize(
+      vec3(transpose(inverse(entity_data.model)) * vec4(normal, 0.0)));
   frag_tangent = tangent;
+
+  gl_Position = vec4(1, -1, 1, 1) * (camera_data.proj * camera_data.view *
+                                     vec4(frag_position, 1.0));
 }

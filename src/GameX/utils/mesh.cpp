@@ -45,7 +45,7 @@ Mesh::Mesh(const std::string &path) {
   LAND_INFO("Loading model: {}", path);
   Assimp::Importer importer;
   const aiScene *scene = importer.ReadFile(
-      path, aiProcess_Triangulate | aiProcess_FlipUVs |
+      path, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs |
                 aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {

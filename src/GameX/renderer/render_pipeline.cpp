@@ -85,7 +85,7 @@ RenderPipeline::RenderPipeline(struct Renderer *renderer, int max_film)
 
   geometry_pass_pipeline_settings.SetMultiSampleState(VK_SAMPLE_COUNT_1_BIT);
 
-  geometry_pass_pipeline_settings.SetCullMode(VK_CULL_MODE_BACK_BIT);
+  geometry_pass_pipeline_settings.SetCullMode(VK_CULL_MODE_FRONT_BIT);
 
   geometry_pass_pipeline_ = std::make_unique<grassland::vulkan::Pipeline>(
       renderer->App()->Core(), geometry_pass_pipeline_settings);
