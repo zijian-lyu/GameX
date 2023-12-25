@@ -87,6 +87,7 @@ void Application::Update() {
   auto current_time = glfwGetTime();
   auto delta_time = current_time - last_time;
   animation_manager_->Update(delta_time);
+  renderer_->SyncObjects();
 }
 
 void Application::Render() {

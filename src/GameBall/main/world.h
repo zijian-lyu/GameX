@@ -14,5 +14,9 @@ class World : public GameX::Base::Module {
   GameX::Animation::Mesh *cube_;
   GameX::Animation::StaticModel *static_model_;
   GameX::Animation::DynamicModel *dynamic_model_;
+  GameX::Animation::Entity *static_entity_;
+  GameX::Animation::Entity *dynamic_entity_;
+  GameX::Animation::AmbientLight *ambient_light_;
+  GameX::Animation::DirectionalLight *directional_light_;
 };
 }  // namespace GameBall
