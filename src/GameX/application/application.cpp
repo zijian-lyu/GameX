@@ -53,8 +53,6 @@ Application::Application(const ApplicationSettings &settings)
   grassland::vulkan::CoreSettings core_settings;
   core_settings.window = window_;
 
-  asset_probe_ = std::make_unique<class AssetProbe>();
-
   vk_core_ = std::make_unique<grassland::vulkan::Core>(core_settings);
 
   renderer_ = std::make_unique<class Renderer>(this);
@@ -79,7 +77,6 @@ void Application::Cleanup() {
   animation_manager_.reset();
   renderer_.reset();
   vk_core_.reset();
-  asset_probe_.reset();
   glfwDestroyWindow(window_);
   glfwTerminate();
 }

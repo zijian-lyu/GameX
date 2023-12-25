@@ -25,6 +25,11 @@ class AssetProbe {
     return "";
   }
 
+  static AssetProbe *PublicInstance() {
+    static AssetProbe probe;
+    return &probe;
+  }
+
  private:
   std::vector<std::string> search_paths_;
 };

@@ -1,5 +1,7 @@
 #include "GameX/utils/mesh.h"
 
+#include "GameX/utils/asset_probe.h"
+
 // Include assimp
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
@@ -42,11 +44,13 @@ const std::vector<uint32_t> &Mesh::Indices() const {
 }
 
 Mesh::Mesh(const std::string &path) {
-  LAND_INFO("Loading model: {}", path);
+  auto real_path = Base::AssetProbe::PublicInstance()->ProbeAsset(path);
+  LAND_INFO("Loading model: {}", real_path);
   Assimp::Importer importer;
   const aiScene *scene = importer.ReadFile(
-      path, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs |
-                aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
+      real_path, aiProcess_Triangulate | aiProcess_GenNormals |
+                     aiProcess_FlipUVs | aiProcess_CalcTangentSpace |
+                     aiProcess_JoinIdenticalVertices);
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) {
     LAND_ERROR("Failed to load model: {}", path);

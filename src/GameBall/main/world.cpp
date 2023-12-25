@@ -9,9 +9,11 @@ World::World(GameX::Base::Core *core) : Module(core) {
                                  glm::vec3{0.0f, 0.0f, 0.0f}, 45.0f, 1.0f, 0.1f,
                                  100.0f);
   core->AnimationManager()->SetPrimarySceneCamera(scene_, camera_);
+  cube_ = core->AnimationManager()->CreateMesh("models/cube.obj");
 }
 
 World::~World() {
+  cube_->Release();
   camera_->Release();
   scene_->Release();
   LAND_INFO("Game world released...");

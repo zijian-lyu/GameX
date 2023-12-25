@@ -18,6 +18,14 @@ class Mesh : public Object {
 
   const std::vector<uint32_t> &Indices() const;
 
+  Base::Mesh *ReferenceMesh() {
+    return &reference_mesh_;
+  }
+
+  const Base::Mesh *ReferenceMesh() const {
+    return &reference_mesh_;
+  }
+
  private:
   Base::Mesh mesh_;
   Base::Mesh reference_mesh_;

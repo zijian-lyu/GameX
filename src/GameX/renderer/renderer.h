@@ -23,14 +23,11 @@ class Renderer {
   }
 
   void RegisterSyncObject(grassland::vulkan::DynamicObject *sync_object) {
-    std::cout << std::this_thread::get_id() << std::endl;
     registered_sync_objects_.insert(sync_object);
   }
 
   void UnregisterSyncObject(grassland::vulkan::DynamicObject *sync_object) {
-    if (registered_sync_objects_.find(sync_object) !=
-        registered_sync_objects_.end())
-      registered_sync_objects_.erase(sync_object);
+    registered_sync_objects_.erase(sync_object);
   }
 
   grassland::vulkan::RenderPass *DepthRenderPass() const {

@@ -2,6 +2,7 @@
 
 #include "GameX/animation/command_buffer.h"
 #include "GameX/animation/dynamic_object.h"
+#include "GameX/animation/mesh.h"
 #include "GameX/animation/object.h"
 #include "GameX/animation/scene.h"
 #include "GameX/renderer/renderer.h"
@@ -43,6 +44,11 @@ class Manager {
   template <class... Args>
   [[nodiscard]] class Scene *CreateScene(Args &&...args) {
     return new class Scene(this, std::forward<Args>(args)...);
+  }
+
+  template <class... Args>
+  [[nodiscard]] class Mesh *CreateMesh(Args &&...args) {
+    return new class Mesh(this, std::forward<Args>(args)...);
   }
 
   void SetPrimarySceneCamera(Scene *scene, Camera *camera);
