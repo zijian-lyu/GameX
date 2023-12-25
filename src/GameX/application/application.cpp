@@ -59,7 +59,7 @@ Application::Application(const ApplicationSettings &settings)
 
   animation_manager_ = std::make_unique<Animation::Manager>(renderer_.get());
 
-  game_core_ = std::make_unique<Core>();
+  game_core_ = std::make_unique<Core>(animation_manager_.get());
 }
 
 Application::~Application() {
