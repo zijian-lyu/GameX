@@ -31,11 +31,6 @@ void Core::LogicThread() {
     animation_manager->SetWorkingCommandBuffer(nullptr);
     animation_manager->ExecuteCommandBuffer(std::move(command_buffer));
     metronome_.Tick();
-    static uint64_t num_frame = 0;
-    LAND_INFO("Tick: {} {}", num_frame++,
-              std::chrono::duration_cast<std::chrono::milliseconds>(
-                  std::chrono::steady_clock::now() - start)
-                  .count());
   }
 }
 }  // namespace GameX::Base

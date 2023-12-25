@@ -98,7 +98,7 @@ void Module::UpdateSubordinates() {
 
 Module::~Module() {
   if (!subordinate_dependencies_.empty()) {
-    LAND_ERROR("Module is not empty");
+    LAND_WARN("A destroyed module is not empty");
   }
 }
 }  // namespace GameX::Base
