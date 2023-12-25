@@ -20,7 +20,7 @@ class Manager {
 
   void PushCommand(const std::function<void(Manager *)> &command);
 
-  void PushCommandBuffer(CommandBuffer &&cmd_buffer) {
+  void ExecuteCommandBuffer(CommandBuffer &&cmd_buffer) {
     std::lock_guard<std::mutex> lock(cmd_buffer_queue_mutex_);
     cmd_buffer_queue_.push(std::move(cmd_buffer));
   }

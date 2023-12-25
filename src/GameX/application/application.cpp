@@ -72,9 +72,11 @@ Application::~Application() {
 }
 
 void Application::Init() {
+  game_core_->Start();
 }
 
 void Application::Cleanup() {
+  game_core_->Stop();
 }
 
 void Application::Update() {
