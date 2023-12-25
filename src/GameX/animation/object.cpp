@@ -5,7 +5,6 @@
 namespace GameX::Animation {
 Object::Object(class Manager *manager) {
   manager_ = manager;
-  manager_->RegisterObject(this);
 }
 
 Object::~Object() = default;

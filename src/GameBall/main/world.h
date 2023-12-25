@@ -12,5 +12,7 @@ class World : public GameX::Base::Module {
   GameX::Animation::Scene *scene_;
   GameX::Animation::Camera *camera_;
   GameX::Animation::Mesh *cube_;
+  GameX::Animation::StaticModel *static_model_;
+  GameX::Animation::DynamicModel *dynamic_model_;
 };
 }  // namespace GameBall

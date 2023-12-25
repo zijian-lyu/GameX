@@ -26,12 +26,6 @@ void Manager::RecordCommand(const std::function<void()> &command) {
   }
 }
 
-void Manager::RegisterObject(Object *object) {
-  if (working_cmd_buffer_) {
-    working_cmd_buffer_->new_objects.push(object);
-  }
-}
-
 void Manager::RegisterDynamicObject(DynamicObject *object) {
   if (working_cmd_buffer_) {
     working_cmd_buffer_->new_dynamic_objects.push(object);
@@ -54,11 +48,6 @@ void Manager::ProcessCommandBufferQueue() {
   while (!cmd_buffer_queue_.empty()) {
     auto &cmd_buffer = cmd_buffer_queue_.front();
 
-    while (!cmd_buffer.new_objects.empty()) {
-      objects_.insert(cmd_buffer.new_objects.front());
-      cmd_buffer.new_objects.pop();
-    }
-
     while (!cmd_buffer.new_dynamic_objects.empty()) {
       dynamic_objects_.insert(cmd_buffer.new_dynamic_objects.front());
       cmd_buffer.new_dynamic_objects.pop();
@@ -73,7 +62,6 @@ void Manager::ProcessCommandBufferQueue() {
       renderer_->App()->VkCore()->Device()->WaitIdle();
       while (!cmd_buffer.delete_objects.empty()) {
         auto &object = cmd_buffer.delete_objects.front();
-        objects_.erase(object);
         delete object;
         cmd_buffer.delete_objects.pop();
       }
