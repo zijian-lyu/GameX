@@ -20,7 +20,7 @@ void Manager::Update(float delta_time) {
   }
 }
 
-void Manager::RecordCommand(const std::function<void(Manager *)> &command) {
+void Manager::RecordCommand(const std::function<void()> &command) {
   if (working_cmd_buffer_) {
     working_cmd_buffer_->commands.push(command);
   }
@@ -63,7 +63,7 @@ void Manager::ProcessCommandBufferQueue() {
     }
 
     while (!cmd_buffer.commands.empty()) {
-      cmd_buffer.commands.front()(this);
+      cmd_buffer.commands.front()();
       cmd_buffer.commands.pop();
     }
 

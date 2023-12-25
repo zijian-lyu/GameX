@@ -19,7 +19,7 @@ class Manager {
     working_cmd_buffer_ = cmd_buffer;
   }
 
-  void RecordCommand(const std::function<void(Manager *)> &command);
+  void RecordCommand(const std::function<void()> &command);
 
   void ExecuteCommandBuffer(CommandBuffer &&cmd_buffer) {
     std::lock_guard<std::mutex> lock(cmd_buffer_queue_mutex_);
@@ -60,5 +60,3 @@ class Manager {
   std::queue<CommandBuffer> cmd_buffer_queue_;
 };
 }  // namespace GameX::Animation
-
-#include "GameX/animation/scene.inl"

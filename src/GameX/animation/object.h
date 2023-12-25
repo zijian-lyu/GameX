@@ -8,6 +8,10 @@ class Object {
   virtual ~Object();
   void Release();
 
+  class Manager *Manager() const {
+    return manager_;
+  }
+
  protected:
   class Manager *manager_;
 };

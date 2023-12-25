@@ -3,7 +3,7 @@
 #include "GameX/animation/manager.h"
 
 namespace GameX::Animation {
-DynamicObject::DynamicObject(Manager *manager) : Object(manager) {
+DynamicObject::DynamicObject(class Manager *manager) : Object(manager) {
   manager_->RegisterDynamicObject(this);
 }
 

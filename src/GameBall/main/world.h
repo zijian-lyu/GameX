@@ -10,5 +10,6 @@ class World : public GameX::Base::Module {
 
  private:
   GameX::Animation::Scene *scene_;
+  GameX::Animation::Camera *camera_;
 };
 }  // namespace GameBall

@@ -21,10 +21,12 @@ class Renderer {
   }
 
   void RegisterSyncObject(grassland::vulkan::DynamicObject *sync_object) {
+    LAND_INFO("Registering sync object: {}", (void *)(sync_object));
     registered_sync_objects_.insert(sync_object);
   }
 
   void UnregisterSyncObject(grassland::vulkan::DynamicObject *sync_object) {
+    LAND_INFO("Unregistering sync object: {}", (void *)(sync_object));
     registered_sync_objects_.erase(sync_object);
   }
 
