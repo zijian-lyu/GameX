@@ -34,15 +34,21 @@ class Manager {
 
   void UnregisterDynamicObject(DynamicObject *object);
 
-  void Render(VkCommandBuffer cmd_buffer);
+  bool Render(VkCommandBuffer cmd_buffer);
 
   Base::Renderer *Renderer() const {
     return renderer_;
   }
 
   template <class... Args>
-  class Scene *CreateScene(Args &&...args) {
+  [[nodiscard]] class Scene *CreateScene(Args &&...args) {
     return new class Scene(this, std::forward<Args>(args)...);
+  }
+
+  void SetPrimarySceneCamera(Scene *scene, Camera *camera);
+
+  const Base::RenderPipeline::Film *PrimaryFilm() const {
+    return film_.get();
   }
 
  private:
@@ -58,5 +64,8 @@ class Manager {
 
   std::mutex cmd_buffer_queue_mutex_;
   std::queue<CommandBuffer> cmd_buffer_queue_;
+
+  Scene *primary_scene_{};
+  Camera *primary_camera_{};
 };
 }  // namespace GameX::Animation

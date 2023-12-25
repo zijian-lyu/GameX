@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "GameX/renderer/camera.h"
 #include "GameX/renderer/lights/lights.h"
 #include "GameX/renderer/model.h"
@@ -21,13 +23,14 @@ class Renderer {
   }
 
   void RegisterSyncObject(grassland::vulkan::DynamicObject *sync_object) {
-    LAND_INFO("Registering sync object: {}", (void *)(sync_object));
+    std::cout << std::this_thread::get_id() << std::endl;
     registered_sync_objects_.insert(sync_object);
   }
 
   void UnregisterSyncObject(grassland::vulkan::DynamicObject *sync_object) {
-    LAND_INFO("Unregistering sync object: {}", (void *)(sync_object));
-    registered_sync_objects_.erase(sync_object);
+    if (registered_sync_objects_.find(sync_object) !=
+        registered_sync_objects_.end())
+      registered_sync_objects_.erase(sync_object);
   }
 
   grassland::vulkan::RenderPass *DepthRenderPass() const {

@@ -36,6 +36,10 @@ class Application {
     return renderer_.get();
   }
 
+  class AssetProbe *AssetProbe() const {
+    return asset_probe_.get();
+  }
+
   void Run();
 
   void OutputImage(VkCommandBuffer cmd_buffer, grassland::vulkan::Image *image);
@@ -61,6 +65,8 @@ class Application {
   ApplicationSettings settings_;
 
   GLFWwindow *window_;
+
+  std::unique_ptr<class AssetProbe> asset_probe_;
 
   std::unique_ptr<grassland::vulkan::Core> vk_core_;
 

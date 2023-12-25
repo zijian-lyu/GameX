@@ -4,4 +4,5 @@
 namespace GameX::Animation {}
 
 #include "GameX/animation/camera.inl"
+#include "GameX/animation/mesh.inl"
 #include "GameX/animation/scene.inl"

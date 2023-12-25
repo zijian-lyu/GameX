@@ -22,14 +22,14 @@ void Core::Stop() {
 
 void Core::LogicThread() {
   while (!stop_logic_thread_) {
+    Animation::CommandBuffer command_buffer;
+    animation_manager->SetWorkingCommandBuffer(&command_buffer);
+
     std::lock_guard<std::mutex> lock(load_queue_mutex_);
     while (!load_queue_.empty()) {
       load_queue_.front()();
       load_queue_.pop();
     }
-
-    Animation::CommandBuffer command_buffer;
-    animation_manager->SetWorkingCommandBuffer(&command_buffer);
 
     UpdateSubordinates();
 

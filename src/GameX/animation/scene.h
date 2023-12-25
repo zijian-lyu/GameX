@@ -11,7 +11,7 @@ class Scene : public Object {
   ~Scene() override;
 
   template <class... Args>
-  Camera *CreateCamera(Args &&...args) {
+  [[nodiscard]] Camera *CreateCamera(Args &&...args) {
     return new Camera(this, std::forward<Args>(args)...);
   }
 

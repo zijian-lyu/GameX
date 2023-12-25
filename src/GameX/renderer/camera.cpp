@@ -62,8 +62,8 @@ void Camera::Init(Scene *scene,
 }
 
 Camera::~Camera() {
-  scene_->Renderer()->UnregisterSyncObject(camera_buffer_.get());
   scene_->DestroyCamera(this);
+  scene_->Renderer()->UnregisterSyncObject(camera_buffer_.get());
 }
 
 }  // namespace GameX::Base

@@ -8,6 +8,7 @@ World::World(GameX::Base::Core *core) : Module(core) {
   camera_ = scene_->CreateCamera(glm::vec3{0.0f, 0.0f, 3.0f},
                                  glm::vec3{0.0f, 0.0f, 0.0f}, 45.0f, 1.0f, 0.1f,
                                  100.0f);
+  core->AnimationManager()->SetPrimarySceneCamera(scene_, camera_);
 }
 
 World::~World() {

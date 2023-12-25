@@ -28,19 +28,19 @@ void Manager::RecordCommand(const std::function<void()> &command) {
 
 void Manager::RegisterObject(Object *object) {
   if (working_cmd_buffer_) {
-    working_cmd_buffer_->new_objects.insert(object);
+    working_cmd_buffer_->new_objects.push(object);
   }
 }
 
 void Manager::RegisterDynamicObject(DynamicObject *object) {
   if (working_cmd_buffer_) {
-    working_cmd_buffer_->new_dynamic_objects.insert(object);
+    working_cmd_buffer_->new_dynamic_objects.push(object);
   }
 }
 
 void Manager::UnregisterObject(Object *object) {
   if (working_cmd_buffer_) {
-    working_cmd_buffer_->delete_objects.insert(object);
+    working_cmd_buffer_->delete_objects.push(object);
   }
 }
 
@@ -54,12 +54,14 @@ void Manager::ProcessCommandBufferQueue() {
   while (!cmd_buffer_queue_.empty()) {
     auto &cmd_buffer = cmd_buffer_queue_.front();
 
-    for (auto &object : cmd_buffer.new_objects) {
-      objects_.insert(object);
+    while (!cmd_buffer.new_objects.empty()) {
+      objects_.insert(cmd_buffer.new_objects.front());
+      cmd_buffer.new_objects.pop();
     }
 
-    for (auto &object : cmd_buffer.new_dynamic_objects) {
-      dynamic_objects_.insert(object);
+    while (!cmd_buffer.new_dynamic_objects.empty()) {
+      dynamic_objects_.insert(cmd_buffer.new_dynamic_objects.front());
+      cmd_buffer.new_dynamic_objects.pop();
     }
 
     while (!cmd_buffer.commands.empty()) {
@@ -69,9 +71,11 @@ void Manager::ProcessCommandBufferQueue() {
 
     if (!cmd_buffer.delete_objects.empty()) {
       renderer_->App()->VkCore()->Device()->WaitIdle();
-      for (auto &object : cmd_buffer.delete_objects) {
+      while (!cmd_buffer.delete_objects.empty()) {
+        auto &object = cmd_buffer.delete_objects.front();
         objects_.erase(object);
         delete object;
+        cmd_buffer.delete_objects.pop();
       }
     }
 
@@ -79,7 +83,20 @@ void Manager::ProcessCommandBufferQueue() {
   }
 }
 
-void Manager::Render(VkCommandBuffer cmd_buffer) {
+bool Manager::Render(VkCommandBuffer cmd_buffer) {
+  if (primary_scene_ && primary_camera_) {
+    Renderer()->RenderPipeline()->Render(cmd_buffer, *primary_scene_->Handle(),
+                                         *primary_camera_->Handle(), *film_);
+    return true;
+  }
+  return false;
+}
+
+void Manager::SetPrimarySceneCamera(Scene *scene, Camera *camera) {
+  RecordCommand([this, scene, camera]() {
+    primary_scene_ = scene;
+    primary_camera_ = camera;
+  });
 }
 
 }  // namespace GameX::Animation
