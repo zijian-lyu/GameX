@@ -1,6 +1,5 @@
 #pragma once
 
-#include "GameX/renderer/asset_manager.h"
 #include "GameX/renderer/camera.h"
 #include "GameX/renderer/lights/lights.h"
 #include "GameX/renderer/model.h"
@@ -33,10 +32,6 @@ class Renderer {
     return depth_render_pass_.get();
   }
 
-  AssetManager *AssetManager() const {
-    return asset_manager_.get();
-  }
-
   grassland::vulkan::DescriptorSetLayout *CameraDescriptorSetLayout() {
     return camera_descriptor_set_layout_.get();
   }
@@ -62,7 +57,6 @@ class Renderer {
 
  private:
   void CreateDepthRenderPass();
-  void CreateAssetManager();
   void CreateCameraSetLayout();
   void CreateEntitySetLayout();
   void CreateAmbientLightSetLayout();
@@ -80,7 +74,6 @@ class Renderer {
   std::unique_ptr<grassland::vulkan::DescriptorSetLayout>
       directional_light_descriptor_set_layout_;
   std::unique_ptr<grassland::vulkan::RenderPass> depth_render_pass_;
-  std::unique_ptr<class AssetManager> asset_manager_;
   std::unique_ptr<class RenderPipeline> render_pipeline_;
 };
 }  // namespace GameX::Base

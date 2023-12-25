@@ -18,7 +18,6 @@ void Renderer::SyncObjects() const {
 
 Renderer::Renderer(Application *app) : app_(app) {
   CreateDepthRenderPass();
-  CreateAssetManager();
   CreateCameraSetLayout();
   CreateEntitySetLayout();
   CreateAmbientLightSetLayout();
@@ -32,7 +31,6 @@ Renderer::~Renderer() {
   render_pipeline_.reset();
   entity_descriptor_set_layout_.reset();
   camera_descriptor_set_layout_.reset();
-  asset_manager_.reset();
   depth_render_pass_.reset();
 }
 
@@ -58,10 +56,6 @@ void Renderer::CreateDepthRenderPass() {
   depth_render_pass_ = std::make_unique<grassland::vulkan::RenderPass>(
       app_->VkCore(), attachments, color_attachment_references,
       depth_attachment_reference, resolve_attachment_references);
-}
-
-void Renderer::CreateAssetManager() {
-  asset_manager_ = std::make_unique<class AssetManager>(this);
 }
 
 void Renderer::CreateCameraSetLayout() {

@@ -2,10 +2,9 @@
 #include "GameX/utils/utils.h"
 
 namespace GameX::Base {
-class Renderer;
 class AssetManager {
  public:
-  AssetManager(Renderer *renderer) : renderer_(renderer) {
+  AssetManager() {
     asset_paths_.emplace_back("assets/");
     asset_paths_.emplace_back("../assets/");
     asset_paths_.emplace_back(GAMEX_ASSETS_DIR);
@@ -26,7 +25,6 @@ class AssetManager {
   }
 
  private:
-  Renderer *renderer_;
   std::vector<std::string> asset_paths_;
 };
 }  // namespace GameX::Base
