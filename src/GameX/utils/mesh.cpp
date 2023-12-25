@@ -77,8 +77,9 @@ Mesh::Mesh(const std::string &path) {
       }
       vertex.normal = {mesh->mNormals[j].x, mesh->mNormals[j].y,
                        mesh->mNormals[j].z};
-      vertex.tangent = {mesh->mTangents[j].x, mesh->mTangents[j].y,
-                        mesh->mTangents[j].z};
+      if (mesh->mTangents)
+        vertex.tangent = {mesh->mTangents[j].x, mesh->mTangents[j].y,
+                          mesh->mTangents[j].z};
       vertices.push_back(vertex);
     }
 

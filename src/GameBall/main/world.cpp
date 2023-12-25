@@ -16,7 +16,7 @@ World::World(GameX::Base::Core *core) : Module(core) {
   camera_ = scene_->CreateCamera(glm::vec3{0.0f, 0.0f, 3.0f},
                                  glm::vec3{0.0f, 0.0f, 0.0f}, 45.0f, aspect,
                                  0.1f, 100.0f);
-  cube_ = core_->AnimationManager()->CreateMesh("models/cube.obj");
+  cube_ = core_->AnimationManager()->CreateMesh("models/lucy.obj");
   static_model_ = core_->AnimationManager()->CreateStaticModel(cube_);
   dynamic_model_ = core_->AnimationManager()->CreateDynamicModel(cube_);
   static_entity_ = scene_->CreateEntity(static_model_);
@@ -58,12 +58,12 @@ void World::Update() {
   dynamic_entity_->SetEntitySettings(GameX::Animation::Entity::EntitySettings{
       glm::translate(glm::mat4{1.0f}, glm::vec3{0.5f, 0.0f, 0.0f}) *
       glm::rotate(glm::mat4{1.0f}, omega, glm::vec3{1.0f, 1.0f, 1.0f}) *
-      glm::scale(glm::mat4{1.0f}, glm::vec3{0.5f})});
+      glm::scale(glm::mat4{1.0f}, glm::vec3{0.0025f})});
 
   static_entity_->SetEntitySettings(GameX::Animation::Entity::EntitySettings{
       glm::translate(glm::mat4{1.0f}, glm::vec3{-0.5f, 0.0f, 0.0f}) *
       glm::rotate(glm::mat4{1.0f}, omega, glm::vec3{1.0f, -1.0f, -1.0f}) *
-      glm::scale(glm::mat4{1.0f}, glm::vec3{0.5f})});
+      glm::scale(glm::mat4{1.0f}, glm::vec3{0.0025f})});
   omega += glm::radians(180.0f) / 64.0f;
 }
 
