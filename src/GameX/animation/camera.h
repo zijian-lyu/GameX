@@ -1,4 +1,4 @@
 #pragma once
-#include "GameX/renderer/renderer.h"
+#include "GameX/animation/dynamic_object.h"
 
 namespace GameX::Animation {}

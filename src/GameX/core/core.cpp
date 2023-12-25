@@ -21,7 +21,6 @@ void Core::Stop() {
 }
 
 void Core::LogicThread() {
-  auto start = std::chrono::steady_clock::now();
   while (!stop_logic_thread_) {
     std::lock_guard<std::mutex> lock(load_queue_mutex_);
     while (!load_queue_.empty()) {
@@ -39,9 +38,13 @@ void Core::LogicThread() {
     metronome_.Tick();
   }
 
+  Animation::CommandBuffer command_buffer;
+  animation_manager->SetWorkingCommandBuffer(&command_buffer);
   std::set<Object *> release_modules = GetSubordinates();
   for (auto &module : release_modules) {
     delete module;
   }
+  animation_manager->SetWorkingCommandBuffer(nullptr);
+  animation_manager->ExecuteCommandBuffer(std::move(command_buffer));
 }
 }  // namespace GameX::Base

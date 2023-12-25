@@ -9,5 +9,6 @@ class World : public GameX::Base::Module {
   void Update() override;
 
  private:
+  GameX::Animation::Scene *scene_;
 };
 }  // namespace GameBall

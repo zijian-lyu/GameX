@@ -3,6 +3,7 @@
 #include "GameX/animation/command_buffer.h"
 #include "GameX/animation/dynamic_object.h"
 #include "GameX/animation/object.h"
+#include "GameX/animation/scene.h"
 #include "GameX/renderer/renderer.h"
 
 namespace GameX::Animation {
@@ -18,7 +19,7 @@ class Manager {
     working_cmd_buffer_ = cmd_buffer;
   }
 
-  void PushCommand(const std::function<void(Manager *)> &command);
+  void RecordCommand(const std::function<void(Manager *)> &command);
 
   void ExecuteCommandBuffer(CommandBuffer &&cmd_buffer) {
     std::lock_guard<std::mutex> lock(cmd_buffer_queue_mutex_);
@@ -33,11 +34,21 @@ class Manager {
 
   void UnregisterDynamicObject(DynamicObject *object);
 
+  void Render(VkCommandBuffer cmd_buffer);
+
+  Base::Renderer *Renderer() const {
+    return renderer_;
+  }
+
+  template <class... Args>
+  class Scene *CreateScene(Args &&...args) {
+    return new class Scene(this, std::forward<Args>(args)...);
+  }
+
  private:
   void ProcessCommandBufferQueue();
 
   Base::Renderer *renderer_;
-  std::unique_ptr<Base::Scene> scene_;
   std::unique_ptr<Base::RenderPipeline::Film> film_;
 
   std::set<Object *> objects_;
@@ -49,3 +60,5 @@ class Manager {
   std::queue<CommandBuffer> cmd_buffer_queue_;
 };
 }  // namespace GameX::Animation
+
+#include "GameX/animation/scene.inl"

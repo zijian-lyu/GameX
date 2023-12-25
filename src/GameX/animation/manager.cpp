@@ -4,11 +4,13 @@
 
 namespace GameX::Animation {
 Manager::Manager(Base::Renderer *renderer) : renderer_(renderer) {
-  scene_ = std::make_unique<Base::Scene>(renderer_);
+  auto extent = renderer_->App()->VkCore()->SwapChain()->Extent();
+  film_ = renderer_->RenderPipeline()->CreateFilm(extent.width, extent.height);
 }
 
 Manager::~Manager() {
-  scene_.reset();
+  ProcessCommandBufferQueue();
+  film_.reset();
 }
 
 void Manager::Update(float delta_time) {
@@ -18,7 +20,7 @@ void Manager::Update(float delta_time) {
   }
 }
 
-void Manager::PushCommand(const std::function<void(Manager *)> &command) {
+void Manager::RecordCommand(const std::function<void(Manager *)> &command) {
   if (working_cmd_buffer_) {
     working_cmd_buffer_->commands.push(command);
   }
@@ -75,6 +77,9 @@ void Manager::ProcessCommandBufferQueue() {
 
     cmd_buffer_queue_.pop();
   }
+}
+
+void Manager::Render(VkCommandBuffer cmd_buffer) {
 }
 
 }  // namespace GameX::Animation

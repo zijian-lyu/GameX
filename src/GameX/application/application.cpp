@@ -72,8 +72,8 @@ Application::~Application() {
 }
 
 void Application::Init() {
-  OnInit();
   game_core_->Start();
+  OnInit();
 }
 
 void Application::Cleanup() {
@@ -83,6 +83,10 @@ void Application::Cleanup() {
 
 void Application::Update() {
   OnUpdate();
+  static auto last_time = glfwGetTime();
+  auto current_time = glfwGetTime();
+  auto delta_time = current_time - last_time;
+  animation_manager_->Update(delta_time);
 }
 
 void Application::Render() {
