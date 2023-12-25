@@ -25,7 +25,7 @@ void Camera::Init(Scene *scene,
   scene_ = scene;
   camera_buffer_ =
       std::make_unique<grassland::vulkan::DynamicBuffer<CameraData>>(
-          scene->Renderer()->App()->Core(), 1,
+          scene->Renderer()->App()->VkCore(), 1,
           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 
   camera_buffer_->At(0).view_matrix_ = glm::lookAt(eye, center, {0, 1, 0});
@@ -33,10 +33,10 @@ void Camera::Init(Scene *scene,
       glm::perspective(glm::radians(fovY), aspect, near_z, far_z);
 
   descriptor_sets_.resize(
-      scene->Renderer()->App()->Core()->MaxFramesInFlight());
+      scene->Renderer()->App()->VkCore()->MaxFramesInFlight());
   for (size_t i = 0; i < descriptor_sets_.size(); ++i) {
     descriptor_sets_[i] = std::make_unique<grassland::vulkan::DescriptorSet>(
-        scene->Renderer()->App()->Core(), scene->DescriptorPool(),
+        scene->Renderer()->App()->VkCore(), scene->DescriptorPool(),
         scene->Renderer()->CameraDescriptorSetLayout());
 
     VkDescriptorBufferInfo buffer_info = {};
@@ -53,8 +53,9 @@ void Camera::Init(Scene *scene,
     write_descriptor_set.descriptorCount = 1;
     write_descriptor_set.pBufferInfo = &buffer_info;
 
-    vkUpdateDescriptorSets(scene->Renderer()->App()->Core()->Device()->Handle(),
-                           1, &write_descriptor_set, 0, nullptr);
+    vkUpdateDescriptorSets(
+        scene->Renderer()->App()->VkCore()->Device()->Handle(), 1,
+        &write_descriptor_set, 0, nullptr);
   }
 
   scene_->Renderer()->RegisterSyncObject(camera_buffer_.get());

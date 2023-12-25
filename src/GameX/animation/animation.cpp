@@ -1,5 +1,3 @@
-//
-// Created by zijian on 12/25/2023.
-//
+#include "GameX/animation/animation.h"
 
-#include "animation.h"
+namespace GameX::Animation {}

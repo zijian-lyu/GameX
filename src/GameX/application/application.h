@@ -1,5 +1,8 @@
 #pragma once
 
+#include "GameX/animation/animation.h"
+#include "GameX/core/core.h"
+#include "GameX/physics/physics.h"
 #include "GameX/renderer/renderer.h"
 #include "GameX/utils/utils.h"
 
@@ -21,19 +24,21 @@ class Application {
     return window_;
   }
 
-  grassland::vulkan::Core *Core() const {
-    return core_.get();
+  grassland::vulkan::Core *VkCore() const {
+    return vk_core_.get();
+  }
+
+  Core *GameCore() const {
+    return game_core_.get();
   }
 
   class Renderer *Renderer() const {
     return renderer_.get();
   }
 
-  class Scene *Scene() const {
-    return scene_.get();
-  }
-
   void Run();
+
+  void OutputImage(VkCommandBuffer cmd_buffer, grassland::vulkan::Image *image);
 
  private:
   void Init();
@@ -44,28 +49,16 @@ class Application {
 
   void Cleanup();
 
-  void CreateCube();
-
   ApplicationSettings settings_;
 
   GLFWwindow *window_;
-  std::unique_ptr<grassland::vulkan::Core> core_;
+
+  std::unique_ptr<grassland::vulkan::Core> vk_core_;
 
   std::unique_ptr<class Renderer> renderer_;
 
-  Mesh cube_;
-  std::unique_ptr<StaticModel> static_cube_;
-  std::unique_ptr<DynamicModel> dynamic_cube_;
+  std::unique_ptr<Animation::Manager> animation_manager_;
 
-  std::unique_ptr<class Scene> scene_;
-  std::unique_ptr<Camera> camera_;
-  std::unique_ptr<Entity> static_entity_;
-  std::unique_ptr<Entity> dynamic_entity_;
-
-  std::unique_ptr<AmbientLight> ambient_light_;
-
-  std::unique_ptr<DirectionalLight> directional_light_;
-
-  std::unique_ptr<RenderPipeline::Film> film_;
+  std::unique_ptr<Core> game_core_;
 };
 }  // namespace GameX::Base

@@ -1,4 +1,4 @@
 #pragma once
-#include "GameX/renderer/renderer.h"
+#include "GameX/animation/manager.h"
 
 namespace GameX::Animation {}

@@ -53,48 +53,28 @@ Application::Application(const ApplicationSettings &settings)
   grassland::vulkan::CoreSettings core_settings;
   core_settings.window = window_;
 
-  core_ = std::make_unique<grassland::vulkan::Core>(core_settings);
+  vk_core_ = std::make_unique<grassland::vulkan::Core>(core_settings);
 
   renderer_ = std::make_unique<class Renderer>(this);
+
+  animation_manager_ = std::make_unique<Animation::Manager>(renderer_.get());
+
+  game_core_ = std::make_unique<Core>();
 }
 
 Application::~Application() {
+  game_core_.reset();
+  animation_manager_.reset();
   renderer_.reset();
-  core_.reset();
+  vk_core_.reset();
   glfwDestroyWindow(window_);
   glfwTerminate();
 }
 
 void Application::Init() {
-  CreateCube();
-  scene_ = std::make_unique<class Scene>(renderer_.get(), SceneSettings());
-  camera_ = scene_->CreateCamera(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), 45.0f,
-                                 16.0f / 9.0f, 0.1f, 100.0f);
-  dynamic_entity_ = scene_->CreateEntity(dynamic_cube_.get());
-  static_entity_ = scene_->CreateEntity(static_cube_.get());
-
-  ambient_light_ = scene_->CreateLight<AmbientLight>(
-      AmbientLight::AmbientLightData{glm::vec3(1.0f, 1.0f, 1.0f), 0.5f});
-
-  directional_light_ = scene_->CreateLight<DirectionalLight>(
-      DirectionalLight::DirectionalLightData{
-          glm::vec3(1.0f, 1.0f, 1.0f), 0.5f,
-          glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f))});
-
-  film_ = renderer_->RenderPipeline()->CreateFilm(settings_.width,
-                                                  settings_.height);
 }
 
 void Application::Cleanup() {
-  film_.reset();
-  directional_light_.reset();
-  ambient_light_.reset();
-  static_entity_.reset();
-  dynamic_entity_.reset();
-  camera_.reset();
-  scene_.reset();
-  static_cube_.reset();
-  dynamic_cube_.reset();
 }
 
 void Application::Update() {
@@ -102,31 +82,15 @@ void Application::Update() {
   static double last_time = current_time;
   double delta_time = current_time - last_time;
 
-  static float omega = 0.0f;
-
-  static_entity_->SetEntitySettings(Entity::EntitySettings{
-      glm::translate(glm::mat4(1.0f), glm::vec3(-0.5, 0.0, 0.0)) *
-      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(1, 1, 1)) *
-      glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5))});
-  dynamic_entity_->SetEntitySettings(Entity::EntitySettings{
-      glm::translate(glm::mat4(1.0f), glm::vec3(0.5, 0.0, 0.0)) *
-      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(1, -1, -1)) *
-      glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5))});
-
-  dynamic_cube_->SyncMeshData();
-
-  omega += delta_time;
-
   last_time = current_time;
 }
 
 void Application::Render() {
-  renderer_->SyncObjects();
-  core_->BeginFrame();
+  vk_core_->BeginFrame();
 
-  auto cmd_buffer = core_->CommandBuffer();
+  auto cmd_buffer = vk_core_->CommandBuffer();
 
-  auto frame_image = core_->SwapChain()->Images()[core_->ImageIndex()];
+  auto frame_image = vk_core_->SwapChain()->Images()[vk_core_->ImageIndex()];
 
   // Transition frame_image_ to VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
   grassland::vulkan::TransitImageLayout(
@@ -151,83 +115,8 @@ void Application::Render() {
       VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
       VK_ACCESS_MEMORY_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
-  renderer_->RenderPipeline()->Render(cmd_buffer->Handle(), *scene_, *camera_,
-                                      *film_);
-
-  auto output_image = film_->output_image.get();
-  // Blit output_image to frame_image_
-  VkImageBlit blit_region = {};
-  blit_region.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-  blit_region.srcSubresource.layerCount = 1;
-  blit_region.srcOffsets[1].x = output_image->Extent().width;
-  blit_region.srcOffsets[1].y = output_image->Extent().height;
-  blit_region.srcOffsets[1].z = 1;
-  blit_region.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-  blit_region.dstSubresource.layerCount = 1;
-  blit_region.dstOffsets[1].x = core_->SwapChain()->Extent().width;
-  blit_region.dstOffsets[1].y = core_->SwapChain()->Extent().height;
-  blit_region.dstOffsets[1].z = 1;
-
-  grassland::vulkan::TransitImageLayout(
-      cmd_buffer->Handle(), output_image->Handle(),
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
-      VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_TRANSFER_READ_BIT,
-      VK_IMAGE_ASPECT_COLOR_BIT);
-  grassland::vulkan::TransitImageLayout(
-      cmd_buffer->Handle(), frame_image, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
-      VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
-      VK_IMAGE_ASPECT_COLOR_BIT);
-
-  vkCmdBlitImage(cmd_buffer->Handle(), output_image->Handle(),
-                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, frame_image,
-                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit_region,
-                 VK_FILTER_NEAREST);
-
-  grassland::vulkan::TransitImageLayout(
-      cmd_buffer->Handle(), output_image->Handle(),
-      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT,
-      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_TRANSFER_READ_BIT,
-      VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
-
-  grassland::vulkan::TransitImageLayout(
-      cmd_buffer->Handle(), frame_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_TRANSFER_BIT,
-      VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
-      VK_ACCESS_MEMORY_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
-
-  core_->EndFrame();
-}
-
-void Application::CreateCube() {
-  std::vector<Vertex> vertices = {
-      Vertex{{-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, 0.0f}},
-      Vertex{{-1.0f, -1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-      Vertex{{-1.0f, 1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
-      Vertex{{-1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 1.0f}},
-      Vertex{{1.0f, -1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},
-      Vertex{{1.0f, -1.0f, 1.0f}, {1.0f, 0.0f, 1.0f}},
-      Vertex{{1.0f, 1.0f, -1.0f}, {1.0f, 1.0f, 0.0f}},
-      Vertex{{1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}},
-  };
-
-  std::vector<uint32_t> indices = {
-      0, 2, 1, 1, 2, 3, 4, 5, 6, 5, 7, 6, 0, 1, 5, 0, 5, 4,
-      2, 6, 7, 2, 7, 3, 0, 4, 6, 0, 6, 2, 1, 3, 7, 1, 7, 5,
-  };
-
-  cube_ = Mesh(renderer_->AssetManager()->GetAssetPath("models/cube.obj"));
-
-  static_cube_ = std::make_unique<StaticModel>(Renderer(), cube_);
-  dynamic_cube_ = std::make_unique<DynamicModel>(Renderer(), &cube_);
-
-  for (auto &vertex : cube_.Vertices()) {
-    vertex.color = vertex.position + 0.5f;
-  }
+  //        OutputImage(cmd_buffer->Handle(), film_->output_image.get());
+  vk_core_->EndFrame();
 }
 
 void Application::Run() {
@@ -239,7 +128,55 @@ void Application::Run() {
     Render();
   }
 
-  core_->Device()->WaitIdle();
+  vk_core_->Device()->WaitIdle();
   Cleanup();
+}
+
+void Application::OutputImage(VkCommandBuffer cmd_buffer,
+                              grassland::vulkan::Image *output_image) {
+  auto frame_image = vk_core_->SwapChain()->Images()[vk_core_->ImageIndex()];
+  // Blit output_image to frame_image_
+  VkImageBlit blit_region = {};
+  blit_region.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  blit_region.srcSubresource.layerCount = 1;
+  blit_region.srcOffsets[1].x = output_image->Extent().width;
+  blit_region.srcOffsets[1].y = output_image->Extent().height;
+  blit_region.srcOffsets[1].z = 1;
+  blit_region.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  blit_region.dstSubresource.layerCount = 1;
+  blit_region.dstOffsets[1].x = vk_core_->SwapChain()->Extent().width;
+  blit_region.dstOffsets[1].y = vk_core_->SwapChain()->Extent().height;
+  blit_region.dstOffsets[1].z = 1;
+
+  grassland::vulkan::TransitImageLayout(
+      cmd_buffer, output_image->Handle(),
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+      VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_TRANSFER_READ_BIT,
+      VK_IMAGE_ASPECT_COLOR_BIT);
+  grassland::vulkan::TransitImageLayout(
+      cmd_buffer, frame_image, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
+      VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
+      VK_IMAGE_ASPECT_COLOR_BIT);
+
+  vkCmdBlitImage(cmd_buffer, output_image->Handle(),
+                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, frame_image,
+                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit_region,
+                 VK_FILTER_NEAREST);
+
+  grassland::vulkan::TransitImageLayout(
+      cmd_buffer, output_image->Handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT,
+      VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_TRANSFER_READ_BIT,
+      VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
+
+  grassland::vulkan::TransitImageLayout(
+      cmd_buffer, frame_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_TRANSFER_BIT,
+      VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
+      VK_ACCESS_MEMORY_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 }  // namespace GameX::Base

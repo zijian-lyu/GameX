@@ -22,39 +22,39 @@ std::unique_ptr<RenderPipeline::Film> RenderPipeline::CreateFilm(int width,
   VkExtent2D extent{static_cast<uint32_t>(width),
                     static_cast<uint32_t>(height)};
   film->albedo_image = std::make_unique<grassland::vulkan::Image>(
-      renderer_->App()->Core(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
+      renderer_->App()->VkCore(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
       VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
           VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT |
           VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
       VK_IMAGE_ASPECT_COLOR_BIT, VK_SAMPLE_COUNT_1_BIT,
       VMA_MEMORY_USAGE_GPU_ONLY);
   film->normal_image = std::make_unique<grassland::vulkan::Image>(
-      renderer_->App()->Core(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
+      renderer_->App()->VkCore(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
       VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
           VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT |
           VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
       VK_IMAGE_ASPECT_COLOR_BIT, VK_SAMPLE_COUNT_1_BIT,
       VMA_MEMORY_USAGE_GPU_ONLY);
   film->position_image = std::make_unique<grassland::vulkan::Image>(
-      renderer_->App()->Core(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
+      renderer_->App()->VkCore(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
       VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
           VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT |
           VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
       VK_IMAGE_ASPECT_COLOR_BIT, VK_SAMPLE_COUNT_1_BIT,
       VMA_MEMORY_USAGE_GPU_ONLY);
   film->depth_image = std::make_unique<grassland::vulkan::Image>(
-      renderer_->App()->Core(), VK_FORMAT_D32_SFLOAT, extent,
+      renderer_->App()->VkCore(), VK_FORMAT_D32_SFLOAT, extent,
       VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
           VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
       VK_IMAGE_ASPECT_DEPTH_BIT);
 
   film->output_image = std::make_unique<grassland::vulkan::Image>(
-      renderer_->App()->Core(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
+      renderer_->App()->VkCore(), VK_FORMAT_R32G32B32A32_SFLOAT, extent,
       VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
           VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
 
   film->framebuffer = std::make_unique<grassland::vulkan::Framebuffer>(
-      renderer_->App()->Core(), extent, render_pass_->Handle(),
+      renderer_->App()->VkCore(), extent, render_pass_->Handle(),
       std::vector<VkImageView>{
           film->albedo_image->ImageView(), film->normal_image->ImageView(),
           film->position_image->ImageView(), film->depth_image->ImageView(),
@@ -62,7 +62,7 @@ std::unique_ptr<RenderPipeline::Film> RenderPipeline::CreateFilm(int width,
 
   film->input_attachment_set =
       std::make_unique<grassland::vulkan::DescriptorSet>(
-          renderer_->App()->Core(), lighting_pass_descriptor_pool_.get(),
+          renderer_->App()->VkCore(), lighting_pass_descriptor_pool_.get(),
           lighting_pass_descriptor_set_layout_.get());
 
   VkDescriptorImageInfo albedo_image_info = {};
@@ -115,7 +115,7 @@ std::unique_ptr<RenderPipeline::Film> RenderPipeline::CreateFilm(int width,
   write_descriptor_sets.push_back(normal_write_descriptor_set);
   write_descriptor_sets.push_back(position_write_descriptor_set);
 
-  vkUpdateDescriptorSets(renderer_->App()->Core()->Device()->Handle(),
+  vkUpdateDescriptorSets(renderer_->App()->VkCore()->Device()->Handle(),
                          static_cast<uint32_t>(write_descriptor_sets.size()),
                          write_descriptor_sets.data(), 0, nullptr);
 
@@ -147,7 +147,8 @@ void RenderPipeline::Render(VkCommandBuffer cmd_buffer,
                     geometry_pass_pipeline_->Handle());
 
   VkDescriptorSet camera_descriptor_set =
-      cameras.DescriptorSet(renderer_->App()->Core()->CurrentFrame())->Handle();
+      cameras.DescriptorSet(renderer_->App()->VkCore()->CurrentFrame())
+          ->Handle();
   vkCmdBindDescriptorSets(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                           geometry_pass_pipeline_layout_->Handle(), 0, 1,
                           &camera_descriptor_set, 0, nullptr);
@@ -169,7 +170,7 @@ void RenderPipeline::Render(VkCommandBuffer cmd_buffer,
 
   for (auto &entity : scene.Entities()) {
     VkDescriptorSet entity_descriptor_set =
-        entity->DescriptorSet(renderer_->App()->Core()->CurrentFrame())
+        entity->DescriptorSet(renderer_->App()->VkCore()->CurrentFrame())
             ->Handle();
     vkCmdBindDescriptorSets(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
                             geometry_pass_pipeline_layout_->Handle(), 1, 1,
@@ -177,14 +178,14 @@ void RenderPipeline::Render(VkCommandBuffer cmd_buffer,
 
     VkBuffer vertex_buffers[] = {
         entity->Model()
-            ->VertexBuffer(renderer_->App()->Core()->CurrentFrame())
+            ->VertexBuffer(renderer_->App()->VkCore()->CurrentFrame())
             ->Handle()};
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(cmd_buffer, 0, 1, vertex_buffers, offsets);
     vkCmdBindIndexBuffer(
         cmd_buffer,
         entity->Model()
-            ->IndexBuffer(renderer_->App()->Core()->CurrentFrame())
+            ->IndexBuffer(renderer_->App()->VkCore()->CurrentFrame())
             ->Handle(),
         0, VK_INDEX_TYPE_UINT32);
     vkCmdDrawIndexed(cmd_buffer, entity->Model()->IndexCount(), 1, 0, 0, 0);
@@ -218,7 +219,7 @@ void RenderPipeline::Render(VkCommandBuffer cmd_buffer,
         light->LightingPipeline()->Settings().pipeline_layout->Handle(), 0, 1,
         &input_attachment_descriptor_set, 0, nullptr);
 
-    light->Lighting(cmd_buffer, renderer_->App()->Core()->CurrentFrame());
+    light->Lighting(cmd_buffer, renderer_->App()->VkCore()->CurrentFrame());
   }
 
   vkCmdEndRenderPass(cmd_buffer);
@@ -303,21 +304,21 @@ void RenderPipeline::CreateRenderPass() {
       VK_DEPENDENCY_BY_REGION_BIT});
 
   render_pass_ = std::make_unique<grassland::vulkan::RenderPass>(
-      renderer_->App()->Core(), attachment_descriptions, subpass_settings,
+      renderer_->App()->VkCore(), attachment_descriptions, subpass_settings,
       dependencies);
 }
 
 void RenderPipeline::CreateGeometryPass() {
   geometry_pass_vertex_shader_ =
       std::make_unique<grassland::vulkan::ShaderModule>(
-          renderer_->App()->Core(), BuiltInShaderSpv("geometry_pass.vert"));
+          renderer_->App()->VkCore(), BuiltInShaderSpv("geometry_pass.vert"));
   geometry_pass_fragment_shader_ =
       std::make_unique<grassland::vulkan::ShaderModule>(
-          renderer_->App()->Core(), BuiltInShaderSpv("geometry_pass.frag"));
+          renderer_->App()->VkCore(), BuiltInShaderSpv("geometry_pass.frag"));
 
   geometry_pass_pipeline_layout_ =
       std::make_unique<grassland::vulkan::PipelineLayout>(
-          renderer_->App()->Core(),
+          renderer_->App()->VkCore(),
           std::vector<grassland::vulkan::DescriptorSetLayout *>{
               renderer_->CameraDescriptorSetLayout(),
               renderer_->EntityDescriptorSetLayout()});
@@ -349,13 +350,13 @@ void RenderPipeline::CreateGeometryPass() {
   geometry_pass_pipeline_settings.SetCullMode(VK_CULL_MODE_BACK_BIT);
 
   geometry_pass_pipeline_ = std::make_unique<grassland::vulkan::Pipeline>(
-      renderer_->App()->Core(), geometry_pass_pipeline_settings);
+      renderer_->App()->VkCore(), geometry_pass_pipeline_settings);
 }
 
 void RenderPipeline::CreateLightingPassCommonAssets(int max_film) {
   lighting_pass_descriptor_pool_ =
       std::make_unique<grassland::vulkan::DescriptorPool>(
-          renderer_->App()->Core(),
+          renderer_->App()->VkCore(),
           std::vector<VkDescriptorPoolSize>{
               {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,
                static_cast<uint32_t>(max_film *
@@ -365,7 +366,7 @@ void RenderPipeline::CreateLightingPassCommonAssets(int max_film) {
 
   lighting_pass_descriptor_set_layout_ =
       std::make_unique<grassland::vulkan::DescriptorSetLayout>(
-          renderer_->App()->Core(),
+          renderer_->App()->VkCore(),
           std::vector<VkDescriptorSetLayoutBinding>{
               {0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1,
                VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
@@ -379,15 +380,15 @@ void RenderPipeline::CreateLightingPassCommonAssets(int max_film) {
 void RenderPipeline::CreateAmbientLightPipeline() {
   ambient_light_vertex_shader_ =
       std::make_unique<grassland::vulkan::ShaderModule>(
-          renderer_->App()->Core(),
+          renderer_->App()->VkCore(),
           BuiltInShaderSpv("fullscreen_lighting_pass.vert"));
   ambient_light_fragment_shader_ =
       std::make_unique<grassland::vulkan::ShaderModule>(
-          renderer_->App()->Core(), BuiltInShaderSpv("ambient_light.frag"));
+          renderer_->App()->VkCore(), BuiltInShaderSpv("ambient_light.frag"));
 
   ambient_light_pipeline_layout_ =
       std::make_unique<grassland::vulkan::PipelineLayout>(
-          renderer_->App()->Core(),
+          renderer_->App()->VkCore(),
           std::vector<grassland::vulkan::DescriptorSetLayout *>{
               lighting_pass_descriptor_set_layout_.get(),
               renderer_->AmbientLightDescriptorSetLayout()});
@@ -419,21 +420,22 @@ void RenderPipeline::CreateAmbientLightPipeline() {
          });
 
   ambient_light_pipeline_ = std::make_unique<grassland::vulkan::Pipeline>(
-      renderer_->App()->Core(), ambient_light_pipeline_settings);
+      renderer_->App()->VkCore(), ambient_light_pipeline_settings);
 }
 
 void RenderPipeline::CreateDirectionalLightPipeline() {
   directional_light_vertex_shader_ =
       std::make_unique<grassland::vulkan::ShaderModule>(
-          renderer_->App()->Core(),
+          renderer_->App()->VkCore(),
           BuiltInShaderSpv("fullscreen_lighting_pass.vert"));
   directional_light_fragment_shader_ =
       std::make_unique<grassland::vulkan::ShaderModule>(
-          renderer_->App()->Core(), BuiltInShaderSpv("directional_light.frag"));
+          renderer_->App()->VkCore(),
+          BuiltInShaderSpv("directional_light.frag"));
 
   directional_light_pipeline_layout_ =
       std::make_unique<grassland::vulkan::PipelineLayout>(
-          renderer_->App()->Core(),
+          renderer_->App()->VkCore(),
           std::vector<grassland::vulkan::DescriptorSetLayout *>{
               lighting_pass_descriptor_set_layout_.get(),
               renderer_->AmbientLightDescriptorSetLayout()});
@@ -466,6 +468,6 @@ void RenderPipeline::CreateDirectionalLightPipeline() {
          });
 
   directional_light_pipeline_ = std::make_unique<grassland::vulkan::Pipeline>(
-      renderer_->App()->Core(), directional_light_pipeline_settings);
+      renderer_->App()->VkCore(), directional_light_pipeline_settings);
 }
 }  // namespace GameX::Base

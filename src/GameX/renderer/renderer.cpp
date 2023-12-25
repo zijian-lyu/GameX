@@ -9,9 +9,9 @@ void Renderer::SyncObjects() const {
     return;
   }
 
-  app_->Core()->SingleTimeCommands([&](VkCommandBuffer cmd_buffer) {
+  app_->VkCore()->SingleTimeCommands([&](VkCommandBuffer cmd_buffer) {
     for (auto sync_object : registered_sync_objects_) {
-      sync_object->SyncData(cmd_buffer, app_->Core()->CurrentFrame());
+      sync_object->SyncData(cmd_buffer, app_->VkCore()->CurrentFrame());
     }
   });
 }
@@ -56,7 +56,7 @@ void Renderer::CreateDepthRenderPass() {
       0, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
 
   depth_render_pass_ = std::make_unique<grassland::vulkan::RenderPass>(
-      app_->Core(), attachments, color_attachment_references,
+      app_->VkCore(), attachments, color_attachment_references,
       depth_attachment_reference, resolve_attachment_references);
 }
 
@@ -74,7 +74,7 @@ void Renderer::CreateCameraSetLayout() {
   bindings[0].pImmutableSamplers = nullptr;
 
   camera_descriptor_set_layout_ =
-      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->Core(),
+      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->VkCore(),
                                                                bindings);
 }
 
@@ -88,7 +88,7 @@ void Renderer::CreateEntitySetLayout() {
   bindings[0].pImmutableSamplers = nullptr;
 
   entity_descriptor_set_layout_ =
-      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->Core(),
+      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->VkCore(),
                                                                bindings);
 }
 
@@ -102,7 +102,7 @@ void Renderer::CreateAmbientLightSetLayout() {
   bindings[0].pImmutableSamplers = nullptr;
 
   ambient_light_descriptor_set_layout_ =
-      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->Core(),
+      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->VkCore(),
                                                                bindings);
 }
 
@@ -116,7 +116,7 @@ void Renderer::CreateDirectionalLightSetLayout() {
   bindings[0].pImmutableSamplers = nullptr;
 
   directional_light_descriptor_set_layout_ =
-      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->Core(),
+      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->VkCore(),
                                                                bindings);
 }
 
