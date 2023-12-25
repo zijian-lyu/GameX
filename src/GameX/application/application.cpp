@@ -72,19 +72,17 @@ Application::~Application() {
 }
 
 void Application::Init() {
+  OnInit();
   game_core_->Start();
 }
 
 void Application::Cleanup() {
+  OnCleanup();
   game_core_->Stop();
 }
 
 void Application::Update() {
-  double current_time = glfwGetTime();
-  static double last_time = current_time;
-  double delta_time = current_time - last_time;
-
-  last_time = current_time;
+  OnUpdate();
 }
 
 void Application::Render() {

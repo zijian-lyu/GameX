@@ -1,13 +1,13 @@
 #include "GameX/core/object.h"
 
 #include "GameX/core/core.h"
-#include "GameX/core/module.h"
+#include "GameX/core/object_manager.h"
 
 namespace GameX::Base {
 Object::Object(class Core *core) : Object(core, core) {
 }
 
-Object::Object(struct Core *core, struct Module *superior)
+Object::Object(class Core *core, class ObjectManager *superior)
     : core_(core), superior_(superior) {
   if (superior_) {
     superior_->RegisterSubordinate(this);

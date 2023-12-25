@@ -1,30 +1,11 @@
 #pragma once
-#include <queue>
 
 #include "GameX/core/object.h"
+#include "GameX/core/object_manager.h"
 
 namespace GameX::Base {
-class Module {
+class Module : public Object, public ObjectManager {
  public:
-  Module();
-  ~Module();
-
- protected:
-  void UpdateSubordinates();
-
- private:
-  friend Object;
-  void RegisterSubordinate(Object *subordinate);
-
-  void UnregisterSubordinate(Object *subordinate);
-
-  void RegisterDependency(Object *subordinate, Object *dependency);
-
-  void UnregisterDependency(Object *subordinate, Object *dependency);
-
-  bool CycleCheck() const;
-
-  std::map<Object *, std::set<Object *>> subordinate_dependencies_{};
-  std::map<Object *, uint32_t> dependency_count_{};
+  Module(class Core *core);
 };
 }  // namespace GameX::Base

@@ -7,8 +7,8 @@
 namespace GameX::Base {
 class Object {
  public:
-  Object(class Core *core_);
-  Object(class Core *core_, class Module *superior);
+  Object(class Core *core);
+  Object(class Core *core, class ObjectManager *superior);
 
   virtual ~Object();
 
@@ -20,6 +20,6 @@ class Object {
 
  protected:
   class Core *core_{};
-  class Module *superior_{};
+  class ObjectManager *superior_{};
 };
 }  // namespace GameX::Base

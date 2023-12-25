@@ -18,7 +18,7 @@ class Application {
  public:
   Application(const ApplicationSettings &settings);
 
-  ~Application();
+  virtual ~Application();
 
   GLFWwindow *Window() const {
     return window_;
@@ -48,6 +48,15 @@ class Application {
   void Render();
 
   void Cleanup();
+
+  virtual void OnInit() {
+  }
+
+  virtual void OnUpdate() {
+  }
+
+  virtual void OnCleanup() {
+  }
 
   ApplicationSettings settings_;
 
