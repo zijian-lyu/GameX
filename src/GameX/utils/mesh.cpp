@@ -5,7 +5,7 @@
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
 
-namespace GameX {
+namespace GameX::Base {
 Mesh::Mesh(const std::vector<Vertex> &vertices,
            const std::vector<uint32_t> &indices) {
   vertices_ = vertices;
@@ -89,4 +89,4 @@ Mesh::Mesh(const std::string &path) {
   vertices_ = vertices;
   indices_ = indices;
 }
-}  // namespace GameX
+}  // namespace GameX::Base

@@ -1,7 +1,7 @@
 #pragma once
 #include "GameX/renderer/model.h"
 
-namespace GameX {
+namespace GameX::Base {
 class Renderer;
 class Entity {
  public:
@@ -33,4 +33,4 @@ class Entity {
   std::vector<std::unique_ptr<grassland::vulkan::DescriptorSet>>
       descriptor_sets_;
 };
-}  // namespace GameX
+}  // namespace GameX::Base

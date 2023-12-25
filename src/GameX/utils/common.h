@@ -3,4 +3,4 @@
 
 #include <set>
 
-namespace GameX {}
+namespace GameX::Base {}

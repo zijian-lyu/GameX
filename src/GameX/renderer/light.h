@@ -1,7 +1,7 @@
 #pragma once
 #include "GameX/utils/utils.h"
 
-namespace GameX {
+namespace GameX::Base {
 class Light {
  public:
   Light(class Scene *scene) : scene_(scene) {
@@ -16,4 +16,4 @@ class Light {
  protected:
   class Scene *scene_;
 };
-}  // namespace GameX
+}  // namespace GameX::Base

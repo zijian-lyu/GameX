@@ -2,7 +2,7 @@
 
 #include "GameX/utils/common.h"
 
-namespace GameX {
+namespace GameX::Base {
 struct Vertex {
   glm::vec3 position{};
   glm::vec3 color{};
@@ -113,4 +113,4 @@ struct Vertex {
     }
   }
 };
-}  // namespace GameX
+}  // namespace GameX::Base

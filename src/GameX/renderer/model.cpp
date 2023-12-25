@@ -3,7 +3,7 @@
 #include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
 
-namespace GameX {
+namespace GameX::Base {
 
 Model::Model(Renderer *renderer) : renderer_(renderer) {
 }
@@ -53,4 +53,4 @@ void DynamicModel::SyncMeshData() {
   vertex_buffer_.UploadContents(mesh_->Vertices().data(),
                                 mesh_->Vertices().size());
 }
-}  // namespace GameX
+}  // namespace GameX::Base

@@ -2,8 +2,8 @@
 
 #include "GameX/renderer/scene.h"
 
-namespace GameX {
+namespace GameX::Base {
 Light::~Light() {
   scene_->DestroyLight(this);
 }
-}  // namespace GameX
+}  // namespace GameX::Base

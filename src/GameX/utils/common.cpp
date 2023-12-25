@@ -1,3 +1,3 @@
 #include "GameX/utils/common.h"
 
-namespace GameX {}
+namespace GameX::Base {}

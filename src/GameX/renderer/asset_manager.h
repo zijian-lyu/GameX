@@ -1,7 +1,7 @@
 #pragma once
 #include "GameX/utils/utils.h"
 
-namespace GameX {
+namespace GameX::Base {
 class Renderer;
 class AssetManager {
  public:
@@ -29,4 +29,4 @@ class AssetManager {
   Renderer *renderer_;
   std::vector<std::string> asset_paths_;
 };
-}  // namespace GameX
+}  // namespace GameX::Base

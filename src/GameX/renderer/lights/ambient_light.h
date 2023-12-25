@@ -1,7 +1,7 @@
 #pragma once
 #include "GameX/renderer/light.h"
 
-namespace GameX {
+namespace GameX::Base {
 class AmbientLight : public Light {
  public:
   struct AmbientLightData {
@@ -22,4 +22,4 @@ class AmbientLight : public Light {
   std::vector<std::unique_ptr<grassland::vulkan::DescriptorSet>>
       descriptor_sets_;
 };
-}  // namespace GameX
+}  // namespace GameX::Base

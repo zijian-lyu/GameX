@@ -8,7 +8,7 @@
 #include "GameX/renderer/scene.h"
 #include "GameX/utils/utils.h"
 
-namespace GameX {
+namespace GameX::Base {
 class Application;
 
 class Renderer {
@@ -83,4 +83,4 @@ class Renderer {
   std::unique_ptr<class AssetManager> asset_manager_;
   std::unique_ptr<class RenderPipeline> render_pipeline_;
 };
-}  // namespace GameX
+}  // namespace GameX::Base

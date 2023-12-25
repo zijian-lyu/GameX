@@ -3,7 +3,7 @@
 #include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
 
-namespace GameX {
+namespace GameX::Base {
 
 Camera::Camera(Scene *scene,
                const glm::vec3 eye,
@@ -65,4 +65,4 @@ Camera::~Camera() {
   scene_->DestroyCamera(this);
 }
 
-}  // namespace GameX
+}  // namespace GameX::Base

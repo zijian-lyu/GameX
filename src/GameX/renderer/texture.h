@@ -1,7 +1,7 @@
 #pragma once
 #include "GameX/utils/utils.h"
 
-namespace GameX {
+namespace GameX::Base {
 class Renderer;
 class Texture {
  public:
@@ -18,4 +18,4 @@ class Texture {
  private:
   std::unique_ptr<grassland::vulkan::Image> image_;
 };
-}  // namespace GameX
+}  // namespace GameX::Base

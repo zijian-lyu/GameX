@@ -3,10 +3,10 @@
 #include "GameX/renderer/renderer.h"
 #include "GameX/utils/utils.h"
 
-namespace GameX {
+namespace GameX::Base {
 
 struct ApplicationSettings {
-  bool fullscreen{true};
+  bool fullscreen{false};
   int width{-1};
   int height{-1};
 };
@@ -68,4 +68,4 @@ class Application {
 
   std::unique_ptr<RenderPipeline::Film> film_;
 };
-}  // namespace GameX
+}  // namespace GameX::Base

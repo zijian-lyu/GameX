@@ -2,7 +2,7 @@
 #include "GameX/utils/mesh.h"
 #include "GameX/utils/utils.h"
 
-namespace GameX {
+namespace GameX::Base {
 class Renderer;
 struct Model {
  public:
@@ -68,4 +68,4 @@ struct DynamicModel : public Model {
   grassland::vulkan::StaticBuffer<uint32_t> index_buffer_;
   const Mesh *mesh_;
 };
-}  // namespace GameX
+}  // namespace GameX::Base

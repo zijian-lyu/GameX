@@ -3,7 +3,7 @@
 #include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
 
-namespace GameX {
+namespace GameX::Base {
 ZBuffer::ZBuffer(struct Renderer *renderer, int width, int height) {
   depth_image_ = std::make_unique<grassland::vulkan::Image>(
       renderer->App()->Core(), VK_FORMAT_D32_SFLOAT,
@@ -11,4 +11,4 @@ ZBuffer::ZBuffer(struct Renderer *renderer, int width, int height) {
       VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT |
           VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 }
-}  // namespace GameX
+}  // namespace GameX::Base

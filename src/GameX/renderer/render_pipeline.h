@@ -3,7 +3,7 @@
 #include "GameX/renderer/camera.h"
 #include "GameX/utils/utils.h"
 
-namespace GameX {
+namespace GameX::Base {
 class RenderPipeline {
  public:
   RenderPipeline(class Renderer *renderer, int max_film = 1024);
@@ -82,4 +82,4 @@ class RenderPipeline {
   uint32_t depth_attachment_index_;
   uint32_t output_attachment_index_;
 };
-}  // namespace GameX
+}  // namespace GameX::Base

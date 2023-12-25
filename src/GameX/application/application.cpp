@@ -2,8 +2,8 @@
 
 #include "GameX/renderer/renderer.h"
 
-namespace GameX {
-Application::Application(const GameX::ApplicationSettings &settings)
+namespace GameX::Base {
+Application::Application(const ApplicationSettings &settings)
     : settings_(settings) {
   glfwInit();
 
@@ -242,4 +242,4 @@ void Application::Run() {
   core_->Device()->WaitIdle();
   Cleanup();
 }
-}  // namespace GameX
+}  // namespace GameX::Base

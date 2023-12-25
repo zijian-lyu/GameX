@@ -3,7 +3,7 @@
 #include "GameX/utils/vertex.h"
 #include "glm/gtc/matrix_transform.hpp"
 
-namespace GameX {
+namespace GameX::Base {
 struct Mesh {
  public:
   Mesh() = default;
@@ -32,4 +32,4 @@ struct Mesh {
   std::vector<Vertex> vertices_{};
   std::vector<uint32_t> indices_{};
 };
-}  // namespace GameX
+}  // namespace GameX::Base

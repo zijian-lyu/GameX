@@ -6,7 +6,7 @@
 #include "GameX/renderer/renderer.h"
 #include "GameX/shaders/shaders.h"
 
-namespace GameX {
+namespace GameX::Base {
 RenderPipeline::RenderPipeline(struct Renderer *renderer, int max_film)
     : renderer_(renderer) {
   CreateRenderPass();
@@ -468,4 +468,4 @@ void RenderPipeline::CreateDirectionalLightPipeline() {
   directional_light_pipeline_ = std::make_unique<grassland::vulkan::Pipeline>(
       renderer_->App()->Core(), directional_light_pipeline_settings);
 }
-}  // namespace GameX
+}  // namespace GameX::Base

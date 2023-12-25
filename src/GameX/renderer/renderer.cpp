@@ -2,7 +2,7 @@
 
 #include "GameX/application/application.h"
 
-namespace GameX {
+namespace GameX::Base {
 
 void Renderer::SyncObjects() const {
   if (registered_sync_objects_.empty()) {
@@ -46,7 +46,7 @@ void Renderer::CreateDepthRenderPass() {
   attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
   attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
   attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  attachments[0].finalLayout = VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL;
+  attachments[0].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
 
   std::vector<VkAttachmentReference> color_attachment_references;
   std::optional<VkAttachmentReference> depth_attachment_reference;
@@ -124,4 +124,4 @@ void Renderer::CreateRenderPipeline() {
   render_pipeline_ = std::make_unique<class RenderPipeline>(this);
 }
 
-}  // namespace GameX
+}  // namespace GameX::Base

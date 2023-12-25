@@ -1,8 +1,8 @@
 #include "GameX/application/application.h"
 
 int main() {
-  GameX::ApplicationSettings settings;
-  GameX::Application app(settings);
+  GameX::Base::ApplicationSettings settings;
+  GameX::Base::Application app(settings);
   app.Run();
   return 0;
 }
