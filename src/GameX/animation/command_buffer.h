@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <functional>
 #include <queue>
 #include <set>
@@ -12,5 +13,6 @@ struct CommandBuffer {
   std::queue<DynamicObject *> new_dynamic_objects;
   std::queue<std::function<void()>> commands;
   std::queue<Object *> delete_objects;
+  std::chrono::steady_clock::time_point time_point;
 };
 }  // namespace GameX::Animation

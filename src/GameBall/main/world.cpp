@@ -16,7 +16,7 @@ World::World(GameX::Base::Core *core) : Module(core) {
   camera_ = scene_->CreateCamera(glm::vec3{0.0f, 0.0f, 3.0f},
                                  glm::vec3{0.0f, 0.0f, 0.0f}, 45.0f, aspect,
                                  0.1f, 100.0f);
-  cube_ = core_->AnimationManager()->CreateMesh("models/lucy.obj");
+  cube_ = core_->AnimationManager()->CreateMesh("models/sphere.obj");
   static_model_ = core_->AnimationManager()->CreateStaticModel(cube_);
   dynamic_model_ = core_->AnimationManager()->CreateDynamicModel(cube_);
   static_entity_ = scene_->CreateEntity(static_model_);
@@ -38,6 +38,9 @@ World::World(GameX::Base::Core *core) : Module(core) {
   dynamic_model_->SyncMeshData();
 
   core_->AnimationManager()->SetPrimarySceneCamera(scene_, camera_);
+
+  dynamic_entity_->SetScale(glm::vec3{0.5f});
+  static_entity_->SetScale(glm::vec3{0.5f});
 }
 
 World::~World() {
@@ -55,15 +58,18 @@ World::~World() {
 
 void World::Update() {
   static float omega = 0.0f;
-  dynamic_entity_->SetEntitySettings(GameX::Animation::Entity::EntitySettings{
-      glm::translate(glm::mat4{1.0f}, glm::vec3{0.5f, 0.0f, 0.0f}) *
-      glm::rotate(glm::mat4{1.0f}, omega, glm::vec3{1.0f, 1.0f, 1.0f}) *
-      glm::scale(glm::mat4{1.0f}, glm::vec3{0.0025f})});
-
-  static_entity_->SetEntitySettings(GameX::Animation::Entity::EntitySettings{
-      glm::translate(glm::mat4{1.0f}, glm::vec3{-0.5f, 0.0f, 0.0f}) *
-      glm::rotate(glm::mat4{1.0f}, omega, glm::vec3{1.0f, -1.0f, -1.0f}) *
-      glm::scale(glm::mat4{1.0f}, glm::vec3{0.0025f})});
+  static_entity_->SetMotion(
+      glm::vec3{-0.5f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f},
+      glm::vec3{0.0f, 0.0f, 0.0f},
+      glm::mat3{
+          glm::rotate(glm::mat4{1.0f}, omega, glm::vec3{1.0f, -1.0f, -1.0f})},
+      glm::vec3{1.0f, -1.0f, -1.0f}, glm::radians(180.0f));
+  dynamic_entity_->SetMotion(
+      glm::vec3{0.5f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f},
+      glm::vec3{0.0f, 0.0f, 0.0f},
+      glm::mat3{
+          glm::rotate(glm::mat4{1.0f}, omega, glm::vec3{1.0f, 1.0f, 1.0f})},
+      glm::vec3{1.0f, 1.0f, 1.0f}, glm::radians(180.0f));
   omega += glm::radians(180.0f) / 64.0f;
 }
 

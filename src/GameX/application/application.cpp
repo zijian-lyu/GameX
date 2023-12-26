@@ -83,10 +83,13 @@ void Application::Cleanup() {
 
 void Application::Update() {
   OnUpdate();
-  static auto last_time = glfwGetTime();
-  auto current_time = glfwGetTime();
-  auto delta_time = current_time - last_time;
-  animation_manager_->Update(delta_time);
+  static auto last_time = std::chrono::steady_clock::now();
+  auto current_time = std::chrono::steady_clock::now();
+  auto delta_time = std::chrono::duration<float, std::chrono::seconds::period>(
+                        current_time - last_time)
+                        .count();
+  last_time = current_time;
+  animation_manager_->Update(current_time);
   renderer_->SyncObjects();
 }
 

@@ -39,12 +39,14 @@ class Core : public ObjectManager {
   Animation::Manager *animation_manager;
   std::unique_ptr<Physics::World> physics_world_;
 
-  Metronome metronome_;
+  Metronome metronome_{std::chrono::microseconds(15625)};
 
   std::thread logic_thread_;
   bool stop_logic_thread_{false};
 
   std::mutex load_queue_mutex_;
   std::queue<std::function<void()>> load_queue_;
+
+  std::chrono::steady_clock::time_point thread_start_time_;
 };
 }  // namespace GameX::Base

@@ -6,6 +6,7 @@ namespace GameX::Animation {
 Manager::Manager(Base::Renderer *renderer) : renderer_(renderer) {
   auto extent = renderer_->App()->VkCore()->SwapChain()->Extent();
   film_ = renderer_->RenderPipeline()->CreateFilm(extent.width, extent.height);
+  last_time_point_ = std::chrono::steady_clock::now();
 }
 
 Manager::~Manager() {
@@ -13,8 +14,12 @@ Manager::~Manager() {
   film_.reset();
 }
 
-void Manager::Update(float delta_time) {
+void Manager::Update(std::chrono::steady_clock::time_point time_point) {
   ProcessCommandBufferQueue();
+  auto delta_time = std::chrono::duration<float, std::chrono::seconds::period>(
+                        time_point - last_time_point_)
+                        .count();
+  last_time_point_ = time_point;
   for (auto &object : dynamic_objects_) {
     object->Update(delta_time);
   }
@@ -46,7 +51,9 @@ void Manager::ProcessCommandBufferQueue() {
   std::lock_guard<std::mutex> lock(cmd_buffer_queue_mutex_);
 
   while (!cmd_buffer_queue_.empty()) {
+    LAND_INFO("Processing command buffer queue");
     auto &cmd_buffer = cmd_buffer_queue_.front();
+    last_time_point_ = cmd_buffer.time_point;
 
     while (!cmd_buffer.new_dynamic_objects.empty()) {
       dynamic_objects_.insert(cmd_buffer.new_dynamic_objects.front());

@@ -15,7 +15,7 @@ class Manager {
 
   ~Manager();
 
-  void Update(float delta_time);
+  void Update(std::chrono::steady_clock::time_point time_point);
 
   void SetWorkingCommandBuffer(CommandBuffer *cmd_buffer) {
     working_cmd_buffer_ = cmd_buffer;
@@ -23,9 +23,13 @@ class Manager {
 
   void RecordCommand(const std::function<void()> &command);
 
-  void ExecuteCommandBuffer(CommandBuffer &&cmd_buffer) {
+  bool ExecuteCommandBuffer(CommandBuffer &&cmd_buffer, bool force_push) {
     std::lock_guard<std::mutex> lock(cmd_buffer_queue_mutex_);
-    cmd_buffer_queue_.push(std::move(cmd_buffer));
+    if (cmd_buffer_queue_.size() < 3 || force_push) {
+      cmd_buffer_queue_.push(std::move(cmd_buffer));
+      return true;
+    }
+    return false;
   }
 
   void RegisterDynamicObject(DynamicObject *object);
@@ -81,5 +85,7 @@ class Manager {
 
   Scene *primary_scene_{};
   Camera *primary_camera_{};
+
+  std::chrono::steady_clock::time_point last_time_point_;
 };
 }  // namespace GameX::Animation
