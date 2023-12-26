@@ -13,9 +13,11 @@ struct SceneSettings {
   int max_cameras = 100;
 };
 
-GAMEX_CLASS(Scene) {
+GAMEX_CLASS(Scene) : public grassland::vulkan::DynamicObject {
  public:
   Scene(class Renderer * renderer, const SceneSettings &settings = {});
+
+  ~Scene();
 
   class Renderer *Renderer() {
     return renderer_;
@@ -66,6 +68,8 @@ GAMEX_CLASS(Scene) {
     return lights_;
   }
 
+  bool SyncData(VkCommandBuffer cmd_buffer, uint32_t frame_index) override;
+
  private:
   class Renderer *renderer_;
 
@@ -73,6 +77,11 @@ GAMEX_CLASS(Scene) {
   std::set<Camera *> cameras_;
   std::set<Entity *> entities_;
   std::set<Light *> lights_;
+
+  Image *envmap_{};
+  grassland::vulkan::Sampler *envmap_sampler_{};
+  std::vector<uint64_t> envmap_versions_;
+  uint64_t staging_envmap_version_{};
 };
 
 }  // namespace GameX::Graphics

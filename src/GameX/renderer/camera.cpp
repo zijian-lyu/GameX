@@ -30,7 +30,7 @@ void Camera::Init(Scene *scene,
 
   camera_buffer_->At(0).view_matrix_ = glm::lookAt(eye, center, {0, 1, 0});
   camera_buffer_->At(0).projection_matrix_ =
-      glm::perspective(glm::radians(fovY), aspect, near_z, far_z);
+      glm::perspectiveZO(glm::radians(fovY), aspect, near_z, far_z);
 
   descriptor_sets_.resize(
       scene->Renderer()->App()->VkCore()->MaxFramesInFlight());

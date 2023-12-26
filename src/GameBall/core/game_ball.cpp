@@ -13,7 +13,8 @@ GameBall::GameBall(const GameSettings &settings)
   static_entity_ = scene_->CreateEntity(static_model_.get());
   animated_entity_ = scene_->CreateEntity(animated_model_.get());
   camera_ = scene_->CreateCamera(glm::vec3{0.0f, 0.0f, 5.0f},
-                                 glm::vec3{0.0f, 0.0f, 0.0f}, 45.0f, aspect);
+                                 glm::vec3{0.0f, 0.0f, 0.0f}, 45.0f, aspect,
+                                 1.0f, 10.0f);
   ambient_light_ =
       scene_->CreateLight<GameX::Graphics::AmbientLight>(glm::vec3{0.3f});
   directional_light_ = scene_->CreateLight<GameX::Graphics::DirectionalLight>(
