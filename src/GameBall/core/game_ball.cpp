@@ -18,6 +18,9 @@ GameBall::GameBall(const GameSettings &settings)
       scene_->CreateLight<GameX::Graphics::AmbientLight>(glm::vec3{0.3f});
   directional_light_ = scene_->CreateLight<GameX::Graphics::DirectionalLight>(
       glm::vec3{0.7f}, glm::vec3{1.0f, 1.0f, 1.0f});
+
+  moon_texture_ = Renderer()->CreateImage("textures/2k_moon.jpg");
+  static_entity_->SetAlbedoImage(moon_texture_.get());
 }
 
 GameBall::~GameBall() {

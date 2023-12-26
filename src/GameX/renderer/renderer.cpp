@@ -23,9 +23,13 @@ Renderer::Renderer(Base::Application *app) : app_(app) {
   CreateAmbientLightSetLayout();
   CreateDirectionalLightSetLayout();
   CreateRenderPipeline();
+  CreateDefaultImagesAndSamplers();
 }
 
 Renderer::~Renderer() {
+  linear_sampler_.reset();
+  nearest_sampler_.reset();
+  anisotropic_sampler_.reset();
   directional_light_descriptor_set_layout_.reset();
   ambient_light_descriptor_set_layout_.reset();
   render_pipeline_.reset();
@@ -74,12 +78,19 @@ void Renderer::CreateCameraSetLayout() {
 
 void Renderer::CreateEntitySetLayout() {
   std::vector<VkDescriptorSetLayoutBinding> bindings;
-  bindings.resize(1);
+  bindings.resize(2);
   bindings[0].binding = 0;
   bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
   bindings[0].descriptorCount = 1;
   bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
   bindings[0].pImmutableSamplers = nullptr;
+
+  // TODO: Add texture sampler
+  bindings[1].binding = 1;
+  bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  bindings[1].descriptorCount = 1;
+  bindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+  bindings[1].pImmutableSamplers = nullptr;
 
   entity_descriptor_set_layout_ =
       std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->VkCore(),
@@ -116,6 +127,33 @@ void Renderer::CreateDirectionalLightSetLayout() {
 
 void Renderer::CreateRenderPipeline() {
   render_pipeline_ = std::make_unique<class RenderPipeline>(this);
+}
+
+void Renderer::CreateDefaultImagesAndSamplers() {
+  linear_sampler_ = std::make_unique<grassland::vulkan::Sampler>(
+      app_->VkCore(), VK_FILTER_LINEAR, VK_FILTER_LINEAR,
+      VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+      VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+      VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_FALSE,
+      VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK, VK_SAMPLER_MIPMAP_MODE_LINEAR);
+  nearest_sampler_ = std::make_unique<grassland::vulkan::Sampler>(
+      app_->VkCore(), VK_FILTER_NEAREST, VK_FILTER_NEAREST,
+      VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+      VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+      VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_FALSE,
+      VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK, VK_SAMPLER_MIPMAP_MODE_NEAREST);
+  anisotropic_sampler_ = std::make_unique<grassland::vulkan::Sampler>(
+      app_->VkCore(), VK_FILTER_LINEAR, VK_FILTER_LINEAR,
+      VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_TRUE,
+      VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK, VK_SAMPLER_MIPMAP_MODE_LINEAR);
+
+  Base::Image white_image(1, 1, Base::Pixel{255, 255, 255, 255});
+  Base::Image normal_map_image(1, 1, Base::Pixel{128, 128, 255, 255});
+  Base::Image black_image(1, 1, Base::Pixel{0, 0, 0, 255});
+  white_image_ = CreateImage(white_image);
+  normal_map_image_ = CreateImage(normal_map_image);
+  black_image_ = CreateImage(black_image);
 }
 
 }  // namespace GameX::Graphics
