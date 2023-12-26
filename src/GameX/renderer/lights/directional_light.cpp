@@ -62,4 +62,13 @@ void DirectionalLight::Lighting(VkCommandBuffer cmd_buffer, int frame_index) {
 
   vkCmdDraw(cmd_buffer, 6, 1, 0, 0);
 }
+
+DirectionalLight::DirectionalLight(struct Scene *scene,
+                                   glm::vec3 color,
+                                   glm::vec3 direction,
+                                   float intensity)
+    : DirectionalLight(
+          scene,
+          DirectionalLightData{color, intensity, glm::normalize(direction)}) {
+}
 }  // namespace GameX::Graphics

@@ -3,13 +3,14 @@
 
 namespace GameX::Graphics {
 class Renderer;
-class Entity {
+
+GAMEX_CLASS(Entity) {
  public:
   struct EntitySettings {
     glm::mat4 model;
   };
 
-  Entity(class Scene *scene, const class Model *model);
+  Entity(class Scene * scene, const PModel model);
 
   ~Entity();
 
@@ -17,17 +18,15 @@ class Entity {
     return descriptor_sets_[frame_index].get();
   }
 
-  const class Model *Model() const {
+  const PModel Model() const {
     return model_;
   }
 
-  void SetEntitySettings(const EntitySettings &settings) {
-    entity_buffer_->At(0) = settings;
-  }
+  void SetAffineMatrix(const glm::mat4 &affine_matrix);
 
  private:
-  class Scene *scene_;
-  const class Model *model_;
+  Scene *scene_;
+  PModel model_;
   std::unique_ptr<grassland::vulkan::DynamicBuffer<EntitySettings>>
       entity_buffer_;
   std::vector<std::unique_ptr<grassland::vulkan::DescriptorSet>>

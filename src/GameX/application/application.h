@@ -34,6 +34,10 @@ class Application {
 
   void OutputImage(VkCommandBuffer cmd_buffer, grassland::vulkan::Image *image);
 
+  VkExtent2D FrameExtent() const {
+    return VkCore()->SwapChain()->Extent();
+  }
+
  private:
   void Init();
 

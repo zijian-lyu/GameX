@@ -6,6 +6,7 @@ namespace GameX::Base {
 class AssetProbe {
  public:
   AssetProbe() {
+    search_paths_.emplace_back("");
     search_paths_.emplace_back("assets/");
     search_paths_.emplace_back("../assets/");
     search_paths_.emplace_back(GAMEX_ASSETS_DIR);

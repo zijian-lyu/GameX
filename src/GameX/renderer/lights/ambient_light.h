@@ -2,14 +2,17 @@
 #include "GameX/renderer/light.h"
 
 namespace GameX::Graphics {
-class AmbientLight : public Light {
+GAMEX_DECLARE_CLASS(Scene)
+GAMEX_CLASS(AmbientLight) : public Light {
  public:
   struct AmbientLightData {
     glm::vec3 color;
     float intensity;
   };
 
-  AmbientLight(class Scene *scene, const AmbientLightData &settings = {});
+  AmbientLight(PScene scene, const AmbientLightData &settings = {});
+
+  AmbientLight(PScene scene, glm::vec3 color, float intensity = 1.0f);
 
   ~AmbientLight();
 

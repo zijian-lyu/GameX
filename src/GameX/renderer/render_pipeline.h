@@ -42,12 +42,17 @@ class RenderPipeline {
 
  private:
   void CreateRenderPass();
+
   void CreateGeometryPass();
+
   void CreateLightingPassCommonAssets(int max_film);
+
   void CreateAmbientLightPipeline();
+
   void CreateDirectionalLightPipeline();
 
   class Renderer *renderer_;
+
   std::unique_ptr<grassland::vulkan::RenderPass> render_pass_;
   std::unique_ptr<grassland::vulkan::ShaderModule> geometry_pass_vertex_shader_;
   std::unique_ptr<grassland::vulkan::ShaderModule>
@@ -82,4 +87,8 @@ class RenderPipeline {
   uint32_t depth_attachment_index_;
   uint32_t output_attachment_index_;
 };
+
+typedef RenderPipeline::Film Film;
+typedef std::unique_ptr<Film> UFilm;
+typedef Film *PFilm;
 }  // namespace GameX::Graphics

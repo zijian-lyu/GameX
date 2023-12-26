@@ -2,26 +2,19 @@
 #include "GameX/utils/utils.h"
 
 namespace GameX::Graphics {
-class Scene;
-class Camera {
+GAMEX_DECLARE_CLASS(Scene)
+GAMEX_CLASS(Camera) {
  public:
   Camera() = default;
-  Camera(Scene *scene,
-         const glm::vec3 eye = {},
-         const glm::vec3 center = {},
-         const float fovY = 45.0f,
-         const float aspect = 1.0f,
-         const float near_z = 0.1f,
-         const float far_z = 100.0f);
+  Camera(Scene * scene, const glm::vec3 eye = {}, const glm::vec3 center = {},
+         const float fovY = 45.0f, const float aspect = 1.0f,
+         const float near_z = 0.1f, const float far_z = 100.0f);
 
   ~Camera();
 
-  void Init(Scene *scene,
-            const glm::vec3 eye = {},
-            const glm::vec3 center = {},
-            const float fovY = 45.0f,
-            const float aspect = 1.0f,
-            const float near_z = 0.1f,
+  void Init(Scene * scene, const glm::vec3 eye = {},
+            const glm::vec3 center = {}, const float fovY = 45.0f,
+            const float aspect = 1.0f, const float near_z = 0.1f,
             const float far_z = 100.0f);
 
   struct CameraData {
@@ -38,7 +31,7 @@ class Camera {
   }
 
  private:
-  Scene *scene_;
+  Scene *scene_{};
   std::unique_ptr<grassland::vulkan::DynamicBuffer<CameraData>> camera_buffer_;
   std::vector<std::unique_ptr<grassland::vulkan::DescriptorSet>>
       descriptor_sets_;

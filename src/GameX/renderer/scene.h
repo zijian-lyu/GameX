@@ -13,9 +13,9 @@ struct SceneSettings {
   int max_cameras = 100;
 };
 
-class Scene {
+GAMEX_CLASS(Scene) {
  public:
-  Scene(class Renderer *renderer, const SceneSettings &settings = {});
+  Scene(class Renderer * renderer, const SceneSettings &settings = {});
 
   class Renderer *Renderer() {
     return renderer_;
@@ -26,35 +26,35 @@ class Scene {
   }
 
   template <class... Args>
-  std::unique_ptr<Camera> CreateCamera(Args &&...args) {
+  [[nodiscard]] UCamera CreateCamera(Args && ...args) {
     auto camera = std::make_unique<Camera>(this, std::forward<Args>(args)...);
     cameras_.insert(camera.get());
     return camera;
   }
 
   template <class... Args>
-  std::unique_ptr<Entity> CreateEntity(Args &&...args) {
+  [[nodiscard]] UEntity CreateEntity(Args && ...args) {
     auto entity = std::make_unique<Entity>(this, std::forward<Args>(args)...);
     entities_.insert(entity.get());
     return entity;
   }
 
   template <class LightType, class... Args>
-  std::unique_ptr<LightType> CreateLight(Args &&...args) {
+  [[nodiscard]] std::unique_ptr<LightType> CreateLight(Args && ...args) {
     auto light = std::make_unique<LightType>(this, std::forward<Args>(args)...);
     lights_.insert(light.get());
     return light;
   }
 
-  void DestroyCamera(Camera *camera) {
+  void DestroyCamera(Camera * camera) {
     cameras_.erase(camera);
   }
 
-  void DestroyEntity(Entity *entity) {
+  void DestroyEntity(Entity * entity) {
     entities_.erase(entity);
   }
 
-  void DestroyLight(Light *light) {
+  void DestroyLight(Light * light) {
     lights_.erase(light);
   }
 
@@ -68,9 +68,11 @@ class Scene {
 
  private:
   class Renderer *renderer_;
+
   std::unique_ptr<grassland::vulkan::DescriptorPool> descriptor_pool_;
   std::set<Camera *> cameras_;
   std::set<Entity *> entities_;
   std::set<Light *> lights_;
 };
+
 }  // namespace GameX::Graphics

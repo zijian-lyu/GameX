@@ -44,6 +44,10 @@ AmbientLight::AmbientLight(struct Scene *scene,
   }
 }
 
+AmbientLight::AmbientLight(PScene scene, glm::vec3 color, float intensity)
+    : AmbientLight(scene, {color, intensity}) {
+}
+
 AmbientLight::~AmbientLight() {
   scene_->Renderer()->UnregisterSyncObject(buffer_.get());
 }

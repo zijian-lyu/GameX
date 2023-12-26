@@ -2,9 +2,10 @@
 #include "GameX/utils/utils.h"
 
 namespace GameX::Graphics {
-class Light {
+GAMEX_DECLARE_CLASS(Scene)
+GAMEX_CLASS(Light) {
  public:
-  Light(class Scene *scene) : scene_(scene) {
+  Light(PScene scene) : scene_(scene) {
   }
 
   virtual ~Light();
@@ -14,6 +15,6 @@ class Light {
   virtual void Lighting(VkCommandBuffer cmd_buffer, int frame_index) = 0;
 
  protected:
-  class Scene *scene_;
+  PScene scene_;
 };
 }  // namespace GameX::Graphics

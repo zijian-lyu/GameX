@@ -1,4 +1,4 @@
-#include "GameBall/main/game_ball.h"
+#include "GameBall/core/game_ball.h"
 
 int main() {
   GameBall::GameSettings settings;

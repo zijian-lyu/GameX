@@ -5,7 +5,7 @@
 #include "GameX/renderer/scene.h"
 
 namespace GameX::Graphics {
-Entity::Entity(Scene *scene, const class Model *model) {
+Entity::Entity(Scene *scene, const PModel model) {
   scene_ = scene;
   model_ = model;
 
@@ -49,5 +49,9 @@ Entity::Entity(Scene *scene, const class Model *model) {
 Entity::~Entity() {
   scene_->Renderer()->UnregisterSyncObject(entity_buffer_.get());
   scene_->DestroyEntity(this);
+}
+
+void Entity::SetAffineMatrix(const glm::mat4 &affine_matrix) {
+  entity_buffer_->At(0).model = affine_matrix;
 }
 }  // namespace GameX::Graphics

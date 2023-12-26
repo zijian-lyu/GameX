@@ -60,12 +60,36 @@ class Renderer {
 
   void SyncObjects() const;
 
+  template <class... Args>
+  [[nodiscard]] UScene CreateScene(Args &&...args) {
+    return std::make_unique<Scene>(this, std::forward<Args>(args)...);
+  }
+
+  template <class... Args>
+  [[nodiscard]] UStaticModel CreateStaticModel(Args &&...args) {
+    return std::make_unique<StaticModel>(this, std::forward<Args>(args)...);
+  }
+
+  template <class... Args>
+  [[nodiscard]] UAnimatedModel CreateAnimatedModel(Args &&...args) {
+    return std::make_unique<AnimatedModel>(this, std::forward<Args>(args)...);
+  }
+
+  [[nodiscard]] UFilm CreateFilm(int width, int height) {
+    return RenderPipeline()->CreateFilm(width, height);
+  }
+
  private:
   void CreateDepthRenderPass();
+
   void CreateCameraSetLayout();
+
   void CreateEntitySetLayout();
+
   void CreateAmbientLightSetLayout();
+
   void CreateDirectionalLightSetLayout();
+
   void CreateRenderPipeline();
 
   Base::Application *app_;
@@ -82,3 +106,5 @@ class Renderer {
   std::unique_ptr<class RenderPipeline> render_pipeline_;
 };
 }  // namespace GameX::Graphics
+
+#include "GameX/renderer/model.inl"

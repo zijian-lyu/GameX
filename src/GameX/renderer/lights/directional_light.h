@@ -2,7 +2,7 @@
 #include "GameX/renderer/light.h"
 
 namespace GameX::Graphics {
-class DirectionalLight : public Light {
+GAMEX_CLASS(DirectionalLight) : public Light {
  public:
   struct DirectionalLightData {
     glm::vec3 color;
@@ -10,8 +10,12 @@ class DirectionalLight : public Light {
     glm::vec3 direction;
   };
 
-  DirectionalLight(class Scene *scene,
+  DirectionalLight(class Scene * scene,
                    const DirectionalLightData &settings = {});
+
+  DirectionalLight(class Scene * scene, glm::vec3 color,
+                   glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f),
+                   float intensity = 1.0f);
 
   ~DirectionalLight();
 

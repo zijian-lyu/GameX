@@ -59,6 +59,10 @@ Application::Application(const ApplicationSettings &settings)
 }
 
 Application::~Application() {
+  renderer_.reset();
+  vk_core_.reset();
+  glfwDestroyWindow(window_);
+  glfwTerminate();
 }
 
 void Application::Init() {
@@ -67,10 +71,6 @@ void Application::Init() {
 
 void Application::Cleanup() {
   OnCleanup();
-  renderer_.reset();
-  vk_core_.reset();
-  glfwDestroyWindow(window_);
-  glfwTerminate();
 }
 
 void Application::Update() {
