@@ -1,7 +1,5 @@
 #pragma once
 
-#include "GameX/animation/animation.h"
-#include "GameX/core/core.h"
 #include "GameX/physics/physics.h"
 #include "GameX/renderer/renderer.h"
 #include "GameX/utils/utils.h"
@@ -28,10 +26,6 @@ class Application {
     return vk_core_.get();
   }
 
-  Core *GameCore() const {
-    return game_core_.get();
-  }
-
   class Renderer *Renderer() const {
     return renderer_.get();
   }
@@ -55,6 +49,9 @@ class Application {
   virtual void OnUpdate() {
   }
 
+  virtual void OnRender() {
+  }
+
   virtual void OnCleanup() {
   }
 
@@ -65,9 +62,5 @@ class Application {
   std::unique_ptr<grassland::vulkan::Core> vk_core_;
 
   std::unique_ptr<class Renderer> renderer_;
-
-  std::unique_ptr<Animation::Manager> animation_manager_;
-
-  std::unique_ptr<Core> game_core_;
 };
 }  // namespace GameX::Base

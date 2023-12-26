@@ -1,4 +1,4 @@
-#include "GameX/core/object_manager.h"
+#include "GameX/utils/object_manager.h"
 
 namespace GameX::Base {
 ObjectManager::ObjectManager() {

@@ -3,14 +3,7 @@
 
 namespace GameBall {
 
-struct GameSettings {
-  bool fullscreen{false};
-  int width{-1};
-  int height{-1};
-  GameX::Base::ApplicationSettings GetApplicationSettings() const {
-    return {fullscreen, width, height};
-  }
-};
+typedef GameX::Base::ApplicationSettings GameSettings;
 
 class GameBall : public GameX::Base::Application {
  public:

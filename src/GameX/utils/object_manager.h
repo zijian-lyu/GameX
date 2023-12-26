@@ -1,7 +1,7 @@
 #pragma once
 #include <queue>
 
-#include "GameX/core/object.h"
+#include "GameX/utils/object.h"
 
 namespace GameX::Base {
 class ObjectManager {

@@ -56,25 +56,17 @@ Application::Application(const ApplicationSettings &settings)
   vk_core_ = std::make_unique<grassland::vulkan::Core>(core_settings);
 
   renderer_ = std::make_unique<class Renderer>(this);
-
-  animation_manager_ = std::make_unique<Animation::Manager>(renderer_.get());
-
-  game_core_ = std::make_unique<Core>(animation_manager_.get());
 }
 
 Application::~Application() {
 }
 
 void Application::Init() {
-  game_core_->Start();
   OnInit();
 }
 
 void Application::Cleanup() {
   OnCleanup();
-  game_core_->Stop();
-  game_core_.reset();
-  animation_manager_.reset();
   renderer_.reset();
   vk_core_.reset();
   glfwDestroyWindow(window_);
@@ -83,13 +75,6 @@ void Application::Cleanup() {
 
 void Application::Update() {
   OnUpdate();
-  static auto last_time = std::chrono::steady_clock::now();
-  auto current_time = std::chrono::steady_clock::now();
-  auto delta_time = std::chrono::duration<float, std::chrono::seconds::period>(
-                        current_time - last_time)
-                        .count();
-  last_time = current_time;
-  animation_manager_->Update(current_time);
   renderer_->SyncObjects();
 }
 
@@ -123,10 +108,7 @@ void Application::Render() {
       VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_ACCESS_TRANSFER_WRITE_BIT,
       VK_ACCESS_MEMORY_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT);
 
-  if (animation_manager_->Render(cmd_buffer->Handle())) {
-    auto film = animation_manager_->PrimaryFilm();
-    OutputImage(cmd_buffer->Handle(), film->output_image.get());
-  }
+  OnRender();
 
   vk_core_->EndFrame();
 }
