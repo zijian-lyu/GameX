@@ -5,7 +5,7 @@
 #include "GameX/renderer/light.h"
 #include "GameX/renderer/render_pipeline.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 
 struct SceneSettings {
   int max_objects = 1000;
@@ -73,4 +73,4 @@ class Scene {
   std::set<Entity *> entities_;
   std::set<Light *> lights_;
 };
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

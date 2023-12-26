@@ -3,7 +3,7 @@
 #include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 AmbientLight::AmbientLight(struct Scene *scene,
                            const AmbientLight::AmbientLightData &settings)
     : Light(scene) {
@@ -63,4 +63,4 @@ void AmbientLight::Lighting(VkCommandBuffer cmd_buffer, int frame_index) {
   vkCmdDraw(cmd_buffer, 6, 1, 0, 0);
 }
 
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

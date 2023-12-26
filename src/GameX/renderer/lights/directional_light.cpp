@@ -3,7 +3,7 @@
 #include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 DirectionalLight::DirectionalLight(Scene *scene,
                                    const DirectionalLightData &settings)
     : Light(scene) {
@@ -62,4 +62,4 @@ void DirectionalLight::Lighting(VkCommandBuffer cmd_buffer, int frame_index) {
 
   vkCmdDraw(cmd_buffer, 6, 1, 0, 0);
 }
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

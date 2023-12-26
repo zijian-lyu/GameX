@@ -1,7 +1,7 @@
 #pragma once
 #include "GameX/renderer/light.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 class DirectionalLight : public Light {
  public:
   struct DirectionalLightData {
@@ -25,4 +25,4 @@ class DirectionalLight : public Light {
   std::vector<std::unique_ptr<grassland::vulkan::DescriptorSet>>
       descriptor_sets_;
 };
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

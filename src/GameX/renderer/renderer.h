@@ -11,14 +11,17 @@
 
 namespace GameX::Base {
 class Application;
+}
+
+namespace GameX::Graphics {
 
 class Renderer {
  public:
-  Renderer(Application *app);
+  Renderer(Base::Application *app);
 
   ~Renderer();
 
-  Application *App() const {
+  Base::Application *App() const {
     return app_;
   }
 
@@ -65,7 +68,7 @@ class Renderer {
   void CreateDirectionalLightSetLayout();
   void CreateRenderPipeline();
 
-  Application *app_;
+  Base::Application *app_;
   std::set<grassland::vulkan::DynamicObject *> registered_sync_objects_;
   std::unique_ptr<grassland::vulkan::DescriptorSetLayout>
       camera_descriptor_set_layout_;
@@ -78,4 +81,4 @@ class Renderer {
   std::unique_ptr<grassland::vulkan::RenderPass> depth_render_pass_;
   std::unique_ptr<class RenderPipeline> render_pipeline_;
 };
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

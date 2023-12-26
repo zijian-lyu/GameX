@@ -26,7 +26,7 @@ class Application {
     return vk_core_.get();
   }
 
-  class Renderer *Renderer() const {
+  class Graphics::Renderer *Renderer() const {
     return renderer_.get();
   }
 
@@ -61,6 +61,6 @@ class Application {
 
   std::unique_ptr<grassland::vulkan::Core> vk_core_;
 
-  std::unique_ptr<class Renderer> renderer_;
+  std::unique_ptr<Graphics::Renderer> renderer_;
 };
 }  // namespace GameX::Base

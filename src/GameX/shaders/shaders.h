@@ -2,8 +2,8 @@
 
 #include "GameX/utils/utils.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 
 std::vector<uint32_t> BuiltInShaderSpv(const std::string &code_path);
 
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

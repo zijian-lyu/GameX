@@ -6,7 +6,7 @@
 #include "GameX/renderer/renderer.h"
 #include "GameX/shaders/shaders.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 RenderPipeline::RenderPipeline(struct Renderer *renderer, int max_film)
     : renderer_(renderer) {
   CreateRenderPass();
@@ -329,18 +329,18 @@ void RenderPipeline::CreateGeometryPass() {
       geometry_pass_vertex_shader_.get(), VK_SHADER_STAGE_VERTEX_BIT);
   geometry_pass_pipeline_settings.AddShaderStage(
       geometry_pass_fragment_shader_.get(), VK_SHADER_STAGE_FRAGMENT_BIT);
-  geometry_pass_pipeline_settings.AddInputBinding(0, sizeof(Vertex),
+  geometry_pass_pipeline_settings.AddInputBinding(0, sizeof(Base::Vertex),
                                                   VK_VERTEX_INPUT_RATE_VERTEX);
   geometry_pass_pipeline_settings.AddInputAttribute(
-      0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position));
+      0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Base::Vertex, position));
   geometry_pass_pipeline_settings.AddInputAttribute(
-      0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color));
+      0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Base::Vertex, color));
   geometry_pass_pipeline_settings.AddInputAttribute(
-      0, 2, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, texCoord));
+      0, 2, VK_FORMAT_R32G32_SFLOAT, offsetof(Base::Vertex, texCoord));
   geometry_pass_pipeline_settings.AddInputAttribute(
-      0, 3, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal));
+      0, 3, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Base::Vertex, normal));
   geometry_pass_pipeline_settings.AddInputAttribute(
-      0, 4, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, tangent));
+      0, 4, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Base::Vertex, tangent));
 
   geometry_pass_pipeline_settings.SetPrimitiveTopology(
       VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
@@ -470,4 +470,4 @@ void RenderPipeline::CreateDirectionalLightPipeline() {
   directional_light_pipeline_ = std::make_unique<grassland::vulkan::Pipeline>(
       renderer_->App()->VkCore(), directional_light_pipeline_settings);
 }
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

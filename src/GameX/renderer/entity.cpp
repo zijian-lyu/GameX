@@ -4,7 +4,7 @@
 #include "GameX/renderer/renderer.h"
 #include "GameX/renderer/scene.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 Entity::Entity(Scene *scene, const class Model *model) {
   scene_ = scene;
   model_ = model;
@@ -50,4 +50,4 @@ Entity::~Entity() {
   scene_->Renderer()->UnregisterSyncObject(entity_buffer_.get());
   scene_->DestroyEntity(this);
 }
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

@@ -3,7 +3,7 @@
 #include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 Texture::Texture(Renderer *renderer, int width, int height) {
   Init(renderer, width, height);
 }
@@ -14,4 +14,4 @@ void Texture::Init(Renderer *renderer, int width, int height) {
       VkExtent2D{static_cast<uint32_t>(width), static_cast<uint32_t>(height)});
 }
 
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

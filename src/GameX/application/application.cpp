@@ -55,7 +55,7 @@ Application::Application(const ApplicationSettings &settings)
 
   vk_core_ = std::make_unique<grassland::vulkan::Core>(core_settings);
 
-  renderer_ = std::make_unique<class Renderer>(this);
+  renderer_ = std::make_unique<Graphics::Renderer>(this);
 }
 
 Application::~Application() {

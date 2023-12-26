@@ -2,7 +2,7 @@
 #include "GameX/utils/mesh.h"
 #include "GameX/utils/utils.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 class Renderer;
 struct Model {
  public:
@@ -20,7 +20,7 @@ struct Model {
 
 struct StaticModel : public Model {
  public:
-  StaticModel(Renderer *renderer, const Mesh &mesh);
+  StaticModel(Renderer *renderer, const Base::Mesh &mesh);
 
   grassland::vulkan::Buffer *VertexBuffer(int frame_index) const override {
     return vertex_buffer_.GetBuffer(frame_index);
@@ -35,13 +35,13 @@ struct StaticModel : public Model {
   }
 
  private:
-  grassland::vulkan::StaticBuffer<Vertex> vertex_buffer_;
+  grassland::vulkan::StaticBuffer<Base::Vertex> vertex_buffer_;
   grassland::vulkan::StaticBuffer<uint32_t> index_buffer_;
 };
 
 struct DynamicModel : public Model {
  public:
-  DynamicModel(Renderer *renderer, const Mesh *mesh);
+  DynamicModel(Renderer *renderer, const Base::Mesh *mesh);
   ~DynamicModel();
   bool SyncData(VkCommandBuffer cmd_buffer);
   bool SyncData(std::function<void(VkCommandBuffer)> &func);
@@ -64,8 +64,8 @@ struct DynamicModel : public Model {
   void SyncMeshData();
 
  private:
-  grassland::vulkan::DynamicBuffer<Vertex> vertex_buffer_;
+  grassland::vulkan::DynamicBuffer<Base::Vertex> vertex_buffer_;
   grassland::vulkan::StaticBuffer<uint32_t> index_buffer_;
-  const Mesh *mesh_;
+  const Base::Mesh *mesh_;
 };
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

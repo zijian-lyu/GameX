@@ -2,7 +2,7 @@
 
 #include "GameX/application/application.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 
 void Renderer::SyncObjects() const {
   if (registered_sync_objects_.empty()) {
@@ -16,7 +16,7 @@ void Renderer::SyncObjects() const {
   });
 }
 
-Renderer::Renderer(Application *app) : app_(app) {
+Renderer::Renderer(Base::Application *app) : app_(app) {
   CreateDepthRenderPass();
   CreateCameraSetLayout();
   CreateEntitySetLayout();
@@ -118,4 +118,4 @@ void Renderer::CreateRenderPipeline() {
   render_pipeline_ = std::make_unique<class RenderPipeline>(this);
 }
 
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

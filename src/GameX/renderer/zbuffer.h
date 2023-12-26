@@ -2,7 +2,7 @@
 
 #include "GameX/utils/utils.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 class ZBuffer {
  public:
   ZBuffer() = default;
@@ -15,4 +15,4 @@ class ZBuffer {
  private:
   std::unique_ptr<grassland::vulkan::Image> depth_image_;
 };
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics

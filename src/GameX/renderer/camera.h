@@ -1,7 +1,7 @@
 #pragma once
 #include "GameX/utils/utils.h"
 
-namespace GameX::Base {
+namespace GameX::Graphics {
 class Scene;
 class Camera {
  public:
@@ -44,4 +44,4 @@ class Camera {
       descriptor_sets_;
 };
 
-}  // namespace GameX::Base
+}  // namespace GameX::Graphics
