@@ -68,3 +68,5 @@ class Application {
   std::unique_ptr<Graphics::Renderer> renderer_;
 };
 }  // namespace GameX::Base
+
+#include "GameX/renderer/model.inl"

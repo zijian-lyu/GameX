@@ -106,5 +106,3 @@ class Renderer {
   std::unique_ptr<class RenderPipeline> render_pipeline_;
 };
 }  // namespace GameX::Graphics
-
-#include "GameX/renderer/model.inl"
