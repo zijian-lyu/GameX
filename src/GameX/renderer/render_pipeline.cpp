@@ -142,16 +142,6 @@ void RenderPipeline::Render(VkCommandBuffer cmd_buffer,
   render_pass_begin_info.pClearValues = clear_values.data();
   vkCmdBeginRenderPass(cmd_buffer, &render_pass_begin_info,
                        VK_SUBPASS_CONTENTS_INLINE);
-  vkCmdBindPipeline(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                    geometry_pass_pipeline_->Handle());
-
-  VkDescriptorSet camera_descriptor_set =
-      cameras.DescriptorSet(renderer_->App()->VkCore()->CurrentFrame())
-          ->Handle();
-  vkCmdBindDescriptorSets(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          geometry_pass_pipeline_layout_->Handle(), 0, 1,
-                          &camera_descriptor_set, 0, nullptr);
-
   // Viewport and scissor
   VkViewport viewport{};
   viewport.x = 0.0f;
@@ -166,6 +156,28 @@ void RenderPipeline::Render(VkCommandBuffer cmd_buffer,
   scissor.offset = {0, 0};
   scissor.extent = film.Extent();
   vkCmdSetScissor(cmd_buffer, 0, 1, &scissor);
+
+  vkCmdBindPipeline(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    envmap_pipeline_->Handle());
+  VkDescriptorSet camera_descriptor_set =
+      cameras.DescriptorSet(renderer_->App()->VkCore()->CurrentFrame())
+          ->Handle();
+  vkCmdBindDescriptorSets(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          geometry_pass_pipeline_layout_->Handle(), 0, 1,
+                          &camera_descriptor_set, 0, nullptr);
+
+  VkDescriptorSet envmap_descriptor_set =
+      scene.EnvmapDescriptorSet(renderer_->App()->VkCore()->CurrentFrame())
+          ->Handle();
+
+  vkCmdBindDescriptorSets(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          envmap_pipeline_layout_->Handle(), 1, 1,
+                          &envmap_descriptor_set, 0, nullptr);
+
+  vkCmdDraw(cmd_buffer, 6, 1, 0, 0);
+
+  vkCmdBindPipeline(cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    geometry_pass_pipeline_->Handle());
 
   for (auto &entity : scene.Entities()) {
     VkDescriptorSet entity_descriptor_set =
@@ -331,7 +343,7 @@ void RenderPipeline::CreateEnvmapPipeline() {
 
   envmap_pipeline_settings.SetMultiSampleState(VK_SAMPLE_COUNT_1_BIT);
 
-  envmap_pipeline_settings.SetCullMode(VK_CULL_MODE_BACK_BIT);
+  envmap_pipeline_settings.SetCullMode(VK_CULL_MODE_NONE);
 
   envmap_pipeline_settings.depth_stencil_state_create_info->depthTestEnable =
       VK_FALSE;

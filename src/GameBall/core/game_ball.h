@@ -27,6 +27,7 @@ class GameBall : public GameX::Base::Application {
   GameX::Graphics::UEntity animated_entity_;
   GameX::Graphics::UCamera camera_;
   GameX::Graphics::UImage moon_texture_;
+  GameX::Graphics::UImage envmap_texture_;
   GameX::Graphics::UAmbientLight ambient_light_;
   GameX::Graphics::UDirectionalLight directional_light_;
 };

@@ -23,6 +23,7 @@ Scene::Scene(class Renderer *renderer, const SceneSettings &settings) {
       std::make_unique<grassland::vulkan::DynamicBuffer<EnvmapData>>(
           renderer_->App()->VkCore(), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
   renderer_->RegisterSyncObject(envmap_data_buffer_.get());
+  envmap_data_buffer_->At(0) = EnvmapData{0.0f, 1.0f};
   envmap_descriptor_sets_.resize(
       renderer_->App()->VkCore()->MaxFramesInFlight());
   for (int i = 0; i < renderer_->App()->VkCore()->MaxFramesInFlight(); ++i) {

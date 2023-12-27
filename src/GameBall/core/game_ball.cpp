@@ -22,6 +22,10 @@ GameBall::GameBall(const GameSettings &settings)
 
   moon_texture_ = Renderer()->CreateImage("textures/2k_moon.jpg");
   static_entity_->SetAlbedoImage(moon_texture_.get());
+
+  envmap_texture_ =
+      Renderer()->CreateImage("textures/air_museum_playground_2k.hdr");
+  scene_->SetEnvmapImage(envmap_texture_.get());
 }
 
 GameBall::~GameBall() {

@@ -70,6 +70,20 @@ GAMEX_CLASS(Scene) : public grassland::vulkan::DynamicObject {
 
   bool SyncData(VkCommandBuffer cmd_buffer, uint32_t frame_index) override;
 
+  grassland::vulkan::DescriptorSet *EnvmapDescriptorSet(uint32_t frame_index)
+      const {
+    return envmap_descriptor_sets_[frame_index].get();
+  }
+
+  void SetEnvmapImage(Image * image) {
+    envmap_image_ = image;
+    staging_envmap_version_++;
+  }
+
+  void SetEnvmapSettings(float offset, float exposure) {
+    envmap_data_buffer_->At(0) = {offset, exposure};
+  }
+
  private:
   struct EnvmapData {
     float offset;
