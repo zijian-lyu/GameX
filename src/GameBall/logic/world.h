@@ -85,6 +85,10 @@ class World {
     world_events_.push(event);
   }
 
+  float TickDeltaT() const {
+    return 1.0f / 64.0f;
+  }
+
  private:
   friend ::GameBall::GameBall;
   friend ::GameBall::Logic::Manager;

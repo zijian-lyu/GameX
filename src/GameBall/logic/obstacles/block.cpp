@@ -46,6 +46,10 @@ SYNC_ACTOR_FUNC(Block) {
   actor->SetInertiaTensor(J_);
   actor->SetGravity(gravity_);
   actor->SetMotion(position_, velocity_, rotation_, L_);
+  if (ActorInitialize()) {
+    actor->Entity()->SetAlbedoImage(app->AssetManager()->ImageFile(
+        "textures/CopperMemphis/CopperMemphis_2k_basecolor.png"));
+  }
 }
 
 void Block::SetMomentOfInertia(float moment_of_inertia) {
@@ -76,5 +80,20 @@ void Block::SetMotion(const glm::vec3 &position,
   position_ = position;
   velocity_ = velocity;
   L_ = angular_momentum;
+}
+
+void Block::UpdateTick() {
+  auto delta_time = world_->TickDeltaT();
+  glm::vec3 acceleration = gravity_;
+  velocity_ += acceleration * delta_time;
+  position_ += velocity_ * delta_time;
+
+  glm::vec3 omega = rotation_ * glm::inverse(J_) * (L_ * rotation_);
+
+  float theta = glm::length(omega);
+  if (theta > 0.0f) {
+    rotation_ =
+        glm::mat3{glm::rotate(glm::mat4{1.0f}, theta, omega)} * rotation_;
+  }
 }
 }  // namespace GameBall::Logic::Obstacles

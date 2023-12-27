@@ -15,6 +15,10 @@ uint64_t Object::ObjectId() const {
   return object_id_;
 }
 
-void Object::UpdateTick() const {
+void Object::UpdateTick() {
+}
+
+bool Object::ActorInitialize() const {
+  return actor_initialize_;
 }
 }  // namespace GameBall::Logic

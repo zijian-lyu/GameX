@@ -75,6 +75,11 @@ void World::UnregisterPlayer(uint64_t player_id) {
 
 void World::UpdateTick() {
   LAND_INFO("Update Tick... {}", world_version_);
+
+  for (auto &pair : object_map_) {
+    pair.second->UpdateTick();
+  }
+
   world_version_++;
 }
 
@@ -87,6 +92,7 @@ void World::SyncWorldState(GameBall *app) const {
   for (auto &pair : object_map_) {
     pair.second->SyncState(app);
     app->actors_.at(pair.first)->synced_logic_world_version_ = world_version_;
+    pair.second->actor_initialize_ = false;
   }
 }
 

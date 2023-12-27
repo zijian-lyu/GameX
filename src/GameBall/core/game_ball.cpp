@@ -30,9 +30,15 @@ void GameBall::OnInit() {
   ambient_light_ = scene_->CreateLight<GameX::Graphics::AmbientLight>();
   ambient_light_->SetLight(glm::vec3{0.3});
 
+  directional_light_ = scene_->CreateLight<GameX::Graphics::DirectionalLight>();
+  directional_light_->SetLight(glm::vec3{0.7f}, glm::vec3{1.0f, 1.0f, 1.0f});
+
   auto primary_player = world->CreatePlayer();
+  auto primary_unit = world->CreateUnit<Logic::Units::RegularBall>(
+      primary_player->PlayerId(), glm::vec3{0.0f, 1.0f, 0.0f}, 1.0f, 1.0f,
+      1.0f);
   auto primary_obstacle = world->CreateObstacle<Logic::Obstacles::Block>(
-      glm::vec3{0.0f, 0.0f, 0.0f}, 1.0f, false, glm::vec3{1.0f, 1.0f, 1.0f});
+      glm::vec3{0.0f, -5.0f, 0.0f}, 1.0f, false, glm::vec3{10.0f});
 
   VkExtent2D extent = FrameExtent();
   float aspect = static_cast<float>(extent.width) / extent.height;

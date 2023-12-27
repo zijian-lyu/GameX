@@ -12,13 +12,12 @@ CommonBlockActor::~CommonBlockActor() {
 }
 
 void CommonBlockActor::Update(float delta_time) {
-  glm::vec3 force = gravity_ * weight_;
-  glm::vec3 acceleration = force / weight_;
+  glm::vec3 acceleration = gravity_;
   velocity_ += acceleration * delta_time;
   position_ += velocity_ * delta_time;
 
   glm::vec3 omega = rotation_ * J_inv_ * (L_ * rotation_);
-  float theta = glm::length(omega);
+  float theta = glm::length(omega) * delta_time;
   if (theta > 0.0f) {
     rotation_ =
         glm::mat3{glm::rotate(glm::mat4{1.0f}, theta, omega)} * rotation_;

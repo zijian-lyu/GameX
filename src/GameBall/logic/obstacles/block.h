@@ -39,6 +39,8 @@ class Block : public Obstacle {
                  const glm::mat3 &rotation,
                  const glm::vec3 &angular_momentum);
 
+  void UpdateTick() override;
+
  private:
   glm::mat3 transform_{};
   glm::vec3 position_{};

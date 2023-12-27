@@ -24,6 +24,10 @@ class CommonBlockActor : public Actor {
                  const glm::mat3 &rotation,
                  const glm::vec3 &angular_momentum);
 
+  GameX::Graphics::PEntity Entity() const {
+    return entity_.get();
+  }
+
  private:
   GameX::Graphics::UEntity entity_;
   glm::mat3 transform_{1.0f};
