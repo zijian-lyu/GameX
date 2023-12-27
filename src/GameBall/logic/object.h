@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameBall/core/actor.h"
+#include "GameBall/core/actors/actors.h"
 #include "GameBall/core/utils.h"
 
 namespace GameBall {
@@ -22,7 +23,9 @@ class Object {
 
 #define SYNC_ACTOR_FUNC_DECLARE(ActorTy)       \
   typedef ActorTy ActorType;                   \
+                                               \
   void SyncActorState(ActorType *actor) const; \
+                                               \
   void SyncState(GameBall *app) const override;
 
  protected:
@@ -46,6 +49,7 @@ class Object {
     }                                                                  \
     SyncActorState(real_actor);                                        \
   }                                                                    \
+                                                                       \
   void ObjectType::SyncActorState(ObjectType::ActorType *actor) const
 
 }  // namespace GameBall

@@ -73,6 +73,12 @@ DirectionalLight::DirectionalLight(struct Scene *scene,
           DirectionalLightData{color, intensity, glm::normalize(direction)}) {
 }
 
+void DirectionalLight::SetLight(glm::vec3 color,
+                                glm::vec3 direction,
+                                float intensity) {
+  buffer_->At(0) = {color, intensity, glm::normalize(direction)};
+}
+
 grassland::vulkan::DescriptorSetLayout *DirectionalLightDescriptorSetLayout(
     struct Renderer *renderer) {
   static std::map<Renderer *, grassland::vulkan::DescriptorSetLayout *>

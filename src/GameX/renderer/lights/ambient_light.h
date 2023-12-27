@@ -20,6 +20,8 @@ GAMEX_CLASS(AmbientLight) : public Light {
 
   void Lighting(VkCommandBuffer cmd_buffer, int frame_index) override;
 
+  void SetLight(glm::vec3 color = glm::vec3{0.3f}, float intensity = 1.0f);
+
  private:
   std::unique_ptr<grassland::vulkan::DynamicBuffer<AmbientLightData>> buffer_;
   std::vector<std::unique_ptr<grassland::vulkan::DescriptorSet>>

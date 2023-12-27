@@ -68,6 +68,10 @@ void AmbientLight::Lighting(VkCommandBuffer cmd_buffer, int frame_index) {
   vkCmdDraw(cmd_buffer, 6, 1, 0, 0);
 }
 
+void AmbientLight::SetLight(glm::vec3 color, float intensity) {
+  buffer_->At(0) = {color, intensity};
+}
+
 grassland::vulkan::DescriptorSetLayout *AmbientLightDescriptorSetLayout(
     struct Renderer *renderer) {
   static std::map<Renderer *, grassland::vulkan::DescriptorSetLayout *>

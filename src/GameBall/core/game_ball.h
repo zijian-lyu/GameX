@@ -46,6 +46,7 @@ class GameBall : public GameX::Base::Application {
 
  private:
   friend class Logic::Manager;
+  friend class Logic::World;
 
   GameX::Graphics::UScene scene_;
   GameX::Graphics::UFilm film_;
@@ -54,5 +55,9 @@ class GameBall : public GameX::Base::Application {
   std::unique_ptr<class AssetManager> asset_manager_;
   std::map<uint64_t, Actor *> actors_;
   uint64_t synced_logic_world_version_{0};
+
+  GameX::Graphics::UCamera camera_;
+  GameX::Graphics::UAmbientLight ambient_light_;
+  GameX::Graphics::UDirectionalLight directional_light_;
 };
 }  // namespace GameBall

@@ -16,4 +16,5 @@ RegularBall::~RegularBall() {
 
 SYNC_ACTOR_FUNC(RegularBall) {
 }
+
 }  // namespace GameBall::Logic::Units
