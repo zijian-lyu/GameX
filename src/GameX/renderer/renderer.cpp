@@ -18,23 +18,19 @@ void Renderer::SyncObjects() const {
 
 Renderer::Renderer(Base::Application *app) : app_(app) {
   CreateDepthRenderPass();
-  CreateCameraSetLayout();
-  CreateEntitySetLayout();
-  CreateAmbientLightSetLayout();
-  CreateDirectionalLightSetLayout();
   CreateRenderPipeline();
   CreateDefaultImagesAndSamplers();
 }
 
 Renderer::~Renderer() {
+  while (!release_callbacks_.empty()) {
+    release_callbacks_.top()();
+    release_callbacks_.pop();
+  }
   linear_sampler_.reset();
   nearest_sampler_.reset();
   anisotropic_sampler_.reset();
-  directional_light_descriptor_set_layout_.reset();
-  ambient_light_descriptor_set_layout_.reset();
   render_pipeline_.reset();
-  entity_descriptor_set_layout_.reset();
-  camera_descriptor_set_layout_.reset();
   depth_render_pass_.reset();
 }
 
@@ -60,69 +56,6 @@ void Renderer::CreateDepthRenderPass() {
   depth_render_pass_ = std::make_unique<grassland::vulkan::RenderPass>(
       app_->VkCore(), attachments, color_attachment_references,
       depth_attachment_reference, resolve_attachment_references);
-}
-
-void Renderer::CreateCameraSetLayout() {
-  std::vector<VkDescriptorSetLayoutBinding> bindings;
-  bindings.resize(1);
-  bindings[0].binding = 0;
-  bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  bindings[0].descriptorCount = 1;
-  bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-  bindings[0].pImmutableSamplers = nullptr;
-
-  camera_descriptor_set_layout_ =
-      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->VkCore(),
-                                                               bindings);
-}
-
-void Renderer::CreateEntitySetLayout() {
-  std::vector<VkDescriptorSetLayoutBinding> bindings;
-  bindings.resize(2);
-  bindings[0].binding = 0;
-  bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  bindings[0].descriptorCount = 1;
-  bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-  bindings[0].pImmutableSamplers = nullptr;
-
-  // TODO: Add texture sampler
-  bindings[1].binding = 1;
-  bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  bindings[1].descriptorCount = 1;
-  bindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-  bindings[1].pImmutableSamplers = nullptr;
-
-  entity_descriptor_set_layout_ =
-      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->VkCore(),
-                                                               bindings);
-}
-
-void Renderer::CreateAmbientLightSetLayout() {
-  std::vector<VkDescriptorSetLayoutBinding> bindings;
-  bindings.resize(1);
-  bindings[0].binding = 0;
-  bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  bindings[0].descriptorCount = 1;
-  bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-  bindings[0].pImmutableSamplers = nullptr;
-
-  ambient_light_descriptor_set_layout_ =
-      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->VkCore(),
-                                                               bindings);
-}
-
-void Renderer::CreateDirectionalLightSetLayout() {
-  std::vector<VkDescriptorSetLayoutBinding> bindings;
-  bindings.resize(1);
-  bindings[0].binding = 0;
-  bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  bindings[0].descriptorCount = 1;
-  bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-  bindings[0].pImmutableSamplers = nullptr;
-
-  directional_light_descriptor_set_layout_ =
-      std::make_unique<grassland::vulkan::DescriptorSetLayout>(app_->VkCore(),
-                                                               bindings);
 }
 
 void Renderer::CreateRenderPipeline() {

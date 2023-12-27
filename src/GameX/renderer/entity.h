@@ -45,4 +45,7 @@ GAMEX_CLASS(Entity) : public grassland::vulkan::DynamicObject {
   std::vector<uint64_t> albedo_image_versions_{};
   uint64_t staging_albedo_image_version_{0};
 };
+
+grassland::vulkan::DescriptorSetLayout *EntityDescriptorSetLayout(
+    class Renderer *renderer);
 }  // namespace GameX::Graphics

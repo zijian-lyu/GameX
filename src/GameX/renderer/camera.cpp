@@ -37,7 +37,7 @@ void Camera::Init(Scene *scene,
   for (size_t i = 0; i < descriptor_sets_.size(); ++i) {
     descriptor_sets_[i] = std::make_unique<grassland::vulkan::DescriptorSet>(
         scene->Renderer()->App()->VkCore(), scene->DescriptorPool(),
-        scene->Renderer()->CameraDescriptorSetLayout());
+        CameraDescriptorSetLayout(scene->Renderer()));
 
     VkDescriptorBufferInfo buffer_info = {};
     buffer_info.buffer = camera_buffer_->GetBuffer(i)->Handle();
@@ -66,4 +66,28 @@ Camera::~Camera() {
   scene_->Renderer()->UnregisterSyncObject(camera_buffer_.get());
 }
 
+grassland::vulkan::DescriptorSetLayout *CameraDescriptorSetLayout(
+    Renderer *renderer) {
+  static std::map<Renderer *, grassland::vulkan::DescriptorSetLayout *>
+      camera_descriptor_set_layouts;
+  if (!camera_descriptor_set_layouts.count(renderer)) {
+    grassland::vulkan::DescriptorSetLayout *&camera_descriptor_set_layout =
+        camera_descriptor_set_layouts[renderer];
+    std::vector<VkDescriptorSetLayoutBinding> bindings;
+    bindings.resize(1);
+    bindings[0].binding = 0;
+    bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    bindings[0].descriptorCount = 1;
+    bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    bindings[0].pImmutableSamplers = nullptr;
+
+    camera_descriptor_set_layout = new grassland::vulkan::DescriptorSetLayout(
+        renderer->App()->VkCore(), bindings);
+    renderer->AddReleaseCallback([camera_descriptor_set_layout]() {
+      delete camera_descriptor_set_layout;
+    });
+    return camera_descriptor_set_layout;
+  }
+  return camera_descriptor_set_layouts.at(renderer);
+}
 }  // namespace GameX::Graphics

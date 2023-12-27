@@ -29,4 +29,7 @@ GAMEX_CLASS(DirectionalLight) : public Light {
   std::vector<std::unique_ptr<grassland::vulkan::DescriptorSet>>
       descriptor_sets_;
 };
+
+grassland::vulkan::DescriptorSetLayout *DirectionalLightDescriptorSetLayout(
+    class Renderer *renderer);
 }  // namespace GameX::Graphics

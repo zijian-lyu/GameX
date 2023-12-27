@@ -25,4 +25,7 @@ GAMEX_CLASS(AmbientLight) : public Light {
   std::vector<std::unique_ptr<grassland::vulkan::DescriptorSet>>
       descriptor_sets_;
 };
+
+grassland::vulkan::DescriptorSetLayout *AmbientLightDescriptorSetLayout(
+    class Renderer *renderer);
 }  // namespace GameX::Graphics

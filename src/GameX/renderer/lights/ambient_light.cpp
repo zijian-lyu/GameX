@@ -22,7 +22,7 @@ AmbientLight::AmbientLight(struct Scene *scene,
   for (size_t i = 0; i < descriptor_sets_.size(); ++i) {
     descriptor_sets_[i] = std::make_unique<grassland::vulkan::DescriptorSet>(
         scene_->Renderer()->App()->VkCore(), scene_->DescriptorPool(),
-        scene_->Renderer()->AmbientLightDescriptorSetLayout());
+        AmbientLightDescriptorSetLayout(scene_->Renderer()));
 
     VkDescriptorBufferInfo buffer_info = {};
     buffer_info.buffer = buffer_->GetBuffer(i)->Handle();
@@ -67,4 +67,29 @@ void AmbientLight::Lighting(VkCommandBuffer cmd_buffer, int frame_index) {
   vkCmdDraw(cmd_buffer, 6, 1, 0, 0);
 }
 
+grassland::vulkan::DescriptorSetLayout *AmbientLightDescriptorSetLayout(
+    struct Renderer *renderer) {
+  static std::map<Renderer *, grassland::vulkan::DescriptorSetLayout *>
+      ambient_light_descriptor_set_layouts;
+  if (!ambient_light_descriptor_set_layouts.count(renderer)) {
+    auto &ambient_light_descriptor_set_layout =
+        ambient_light_descriptor_set_layouts[renderer];
+    std::vector<VkDescriptorSetLayoutBinding> bindings;
+    bindings.resize(1);
+    bindings[0].binding = 0;
+    bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    bindings[0].descriptorCount = 1;
+    bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    bindings[0].pImmutableSamplers = nullptr;
+
+    ambient_light_descriptor_set_layout =
+        new grassland::vulkan::DescriptorSetLayout(renderer->App()->VkCore(),
+                                                   bindings);
+    renderer->AddReleaseCallback([ambient_light_descriptor_set_layout]() {
+      delete ambient_light_descriptor_set_layout;
+    });
+    return ambient_light_descriptor_set_layout;
+  }
+  return ambient_light_descriptor_set_layouts.at(renderer);
+}
 }  // namespace GameX::Graphics

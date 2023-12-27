@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <stack>
 
 #include "GameX/renderer/camera.h"
 #include "GameX/renderer/image.h"
@@ -36,23 +37,6 @@ class Renderer {
 
   grassland::vulkan::RenderPass *DepthRenderPass() const {
     return depth_render_pass_.get();
-  }
-
-  grassland::vulkan::DescriptorSetLayout *CameraDescriptorSetLayout() {
-    return camera_descriptor_set_layout_.get();
-  }
-
-  grassland::vulkan::DescriptorSetLayout *EntityDescriptorSetLayout() {
-    return entity_descriptor_set_layout_.get();
-  }
-
-  grassland::vulkan::DescriptorSetLayout *AmbientLightDescriptorSetLayout() {
-    return ambient_light_descriptor_set_layout_.get();
-  }
-
-  grassland::vulkan::DescriptorSetLayout *
-  DirectionalLightDescriptorSetLayout() {
-    return directional_light_descriptor_set_layout_.get();
   }
 
   RenderPipeline *RenderPipeline() const {
@@ -109,16 +93,12 @@ class Renderer {
     return normal_map_image_.get();
   }
 
+  void AddReleaseCallback(std::function<void()> callback) {
+    release_callbacks_.push(std::move(callback));
+  }
+
  private:
   void CreateDepthRenderPass();
-
-  void CreateCameraSetLayout();
-
-  void CreateEntitySetLayout();
-
-  void CreateAmbientLightSetLayout();
-
-  void CreateDirectionalLightSetLayout();
 
   void CreateRenderPipeline();
 
@@ -126,14 +106,6 @@ class Renderer {
 
   Base::Application *app_;
   std::set<grassland::vulkan::DynamicObject *> registered_sync_objects_;
-  std::unique_ptr<grassland::vulkan::DescriptorSetLayout>
-      camera_descriptor_set_layout_;
-  std::unique_ptr<grassland::vulkan::DescriptorSetLayout>
-      entity_descriptor_set_layout_;
-  std::unique_ptr<grassland::vulkan::DescriptorSetLayout>
-      ambient_light_descriptor_set_layout_;
-  std::unique_ptr<grassland::vulkan::DescriptorSetLayout>
-      directional_light_descriptor_set_layout_;
   std::unique_ptr<grassland::vulkan::RenderPass> depth_render_pass_;
   std::unique_ptr<class RenderPipeline> render_pipeline_;
 
@@ -144,5 +116,6 @@ class Renderer {
   std::unique_ptr<grassland::vulkan::Sampler> linear_sampler_;
   std::unique_ptr<grassland::vulkan::Sampler> nearest_sampler_;
   std::unique_ptr<grassland::vulkan::Sampler> anisotropic_sampler_;
+  std::stack<std::function<void()>> release_callbacks_;
 };
 }  // namespace GameX::Graphics

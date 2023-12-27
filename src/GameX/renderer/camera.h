@@ -37,4 +37,7 @@ GAMEX_CLASS(Camera) {
       descriptor_sets_;
 };
 
+grassland::vulkan::DescriptorSetLayout *CameraDescriptorSetLayout(
+    class Renderer *renderer);
+
 }  // namespace GameX::Graphics

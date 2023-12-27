@@ -32,7 +32,7 @@ Entity::Entity(Scene *scene, const PModel model) {
   for (size_t i = 0; i < descriptor_sets_.size(); ++i) {
     descriptor_sets_[i] = std::make_unique<grassland::vulkan::DescriptorSet>(
         scene_->Renderer()->App()->VkCore(), scene_->DescriptorPool(),
-        scene_->Renderer()->EntityDescriptorSetLayout());
+        EntityDescriptorSetLayout(scene_->Renderer()));
 
     VkDescriptorBufferInfo buffer_info = {};
     buffer_info.buffer = entity_buffer_->GetBuffer(i)->Handle();
@@ -125,5 +125,38 @@ void Entity::SetAlbedoImageSampler(Image *image,
   albedo_image_ = image;
   albedo_sampler_ = sampler;
   staging_albedo_image_version_++;
+}
+
+grassland::vulkan::DescriptorSetLayout *EntityDescriptorSetLayout(
+    Renderer *renderer) {
+  static std::map<Renderer *, grassland::vulkan::DescriptorSetLayout *>
+      entity_descriptor_set_layouts;
+  if (!entity_descriptor_set_layouts.count(renderer)) {
+    grassland::vulkan::DescriptorSetLayout *&entity_descriptor_set_layout =
+        entity_descriptor_set_layouts[renderer];
+    std::vector<VkDescriptorSetLayoutBinding> bindings;
+    bindings.resize(2);
+    bindings[0].binding = 0;
+    bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    bindings[0].descriptorCount = 1;
+    bindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    bindings[0].pImmutableSamplers = nullptr;
+
+    // TODO: Add texture sampler
+    bindings[1].binding = 1;
+    bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    bindings[1].descriptorCount = 1;
+    bindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    bindings[1].pImmutableSamplers = nullptr;
+
+    entity_descriptor_set_layout = new grassland::vulkan::DescriptorSetLayout(
+        renderer->App()->VkCore(), bindings);
+    renderer->AddReleaseCallback([entity_descriptor_set_layout]() {
+      delete entity_descriptor_set_layout;
+    });
+
+    return entity_descriptor_set_layout;
+  }
+  return entity_descriptor_set_layouts.at(renderer);
 }
 }  // namespace GameX::Graphics

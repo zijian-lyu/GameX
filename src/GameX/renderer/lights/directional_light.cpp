@@ -22,7 +22,7 @@ DirectionalLight::DirectionalLight(Scene *scene,
   for (size_t i = 0; i < descriptor_sets_.size(); ++i) {
     descriptor_sets_[i] = std::make_unique<grassland::vulkan::DescriptorSet>(
         scene_->Renderer()->App()->VkCore(), scene_->DescriptorPool(),
-        scene_->Renderer()->AmbientLightDescriptorSetLayout());
+        AmbientLightDescriptorSetLayout(scene_->Renderer()));
 
     VkDescriptorBufferInfo buffer_info = {};
     buffer_info.buffer = buffer_->GetBuffer(i)->Handle();
@@ -70,5 +70,30 @@ DirectionalLight::DirectionalLight(struct Scene *scene,
     : DirectionalLight(
           scene,
           DirectionalLightData{color, intensity, glm::normalize(direction)}) {
+}
+
+grassland::vulkan::DescriptorSetLayout *DirectionalLightDescriptorSetLayout(
+    struct Renderer *renderer) {
+  static std::map<Renderer *, grassland::vulkan::DescriptorSetLayout *>
+      directional_light_descriptor_set_layouts;
+  auto &directional_light_descriptor_set_layout =
+      directional_light_descriptor_set_layouts[renderer];
+  if (!directional_light_descriptor_set_layout) {
+    std::vector<VkDescriptorSetLayoutBinding> bindings;
+    bindings.resize(1);
+    bindings[0].binding = 0;
+    bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    bindings[0].descriptorCount = 1;
+    bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    bindings[0].pImmutableSamplers = nullptr;
+
+    directional_light_descriptor_set_layout =
+        new grassland::vulkan::DescriptorSetLayout(renderer->App()->VkCore(),
+                                                   bindings);
+    renderer->AddReleaseCallback([directional_light_descriptor_set_layout]() {
+      delete directional_light_descriptor_set_layout;
+    });
+  }
+  return directional_light_descriptor_set_layout;
 }
 }  // namespace GameX::Graphics

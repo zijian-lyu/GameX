@@ -320,8 +320,8 @@ void RenderPipeline::CreateGeometryPass() {
       std::make_unique<grassland::vulkan::PipelineLayout>(
           renderer_->App()->VkCore(),
           std::vector<grassland::vulkan::DescriptorSetLayout *>{
-              renderer_->CameraDescriptorSetLayout(),
-              renderer_->EntityDescriptorSetLayout()});
+              CameraDescriptorSetLayout(renderer_),
+              EntityDescriptorSetLayout(renderer_)});
 
   grassland::vulkan::PipelineSettings geometry_pass_pipeline_settings(
       render_pass_.get(), geometry_pass_pipeline_layout_.get());
@@ -391,7 +391,7 @@ void RenderPipeline::CreateAmbientLightPipeline() {
           renderer_->App()->VkCore(),
           std::vector<grassland::vulkan::DescriptorSetLayout *>{
               lighting_pass_descriptor_set_layout_.get(),
-              renderer_->AmbientLightDescriptorSetLayout()});
+              AmbientLightDescriptorSetLayout(renderer_)});
 
   grassland::vulkan::PipelineSettings ambient_light_pipeline_settings(
       render_pass_.get(), ambient_light_pipeline_layout_.get(), 1);
@@ -438,7 +438,7 @@ void RenderPipeline::CreateDirectionalLightPipeline() {
           renderer_->App()->VkCore(),
           std::vector<grassland::vulkan::DescriptorSetLayout *>{
               lighting_pass_descriptor_set_layout_.get(),
-              renderer_->AmbientLightDescriptorSetLayout()});
+              AmbientLightDescriptorSetLayout(renderer_)});
 
   grassland::vulkan::PipelineSettings directional_light_pipeline_settings(
       render_pass_.get(), directional_light_pipeline_layout_.get(), 1);
