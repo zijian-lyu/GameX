@@ -1,2 +1,2 @@
 #pragma once
-#include "obstacles.h"
+#include "GameBall/logic/obstacles/block.h"

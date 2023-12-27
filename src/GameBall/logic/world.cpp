@@ -52,4 +52,10 @@ void World::UpdateTick() {
   LAND_INFO("Update Tick... {}", world_version_);
   world_version_++;
 }
+
+void World::SyncWorldState(GameBall *app) const {
+  for (auto &pair : object_map_) {
+    pair.second->SyncState(app);
+  }
+}
 }  // namespace GameBall::Logic

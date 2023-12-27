@@ -31,9 +31,11 @@ void GameBall::OnUpdate() {
                          current_time - last_time)
                          .count();
   last_time = current_time;
-  static float omega = 0.0f;
 
-  omega += glm::radians(90.0f) * delta_time;
+  {
+    std::lock_guard<std::mutex> lock(logic_manager_->logic_mutex_);
+    logic_manager_->world_->SyncWorldState(this);
+  };
 }
 
 void GameBall::OnRender() {

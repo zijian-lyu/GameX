@@ -1,5 +1,10 @@
-//
-// Created by zijian on 12/27/2023.
-//
+#include "GameBall/logic/obstacles/block.h"
 
-#include "block.h"
+#include "GameBall/logic/world.h"
+
+namespace GameBall::Logic {
+
+Block::Block(World *world) : Obstacle(world) {
+}
+
+}  // namespace GameBall::Logic

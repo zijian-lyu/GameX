@@ -1,14 +1,15 @@
 #pragma once
 #include "GameBall/core/actor.h"
 
-namespace GameBall {
+namespace GameBall::Actors {
 class CommonBallActor : public Actor {
  public:
   CommonBallActor(GameBall *app);
   ~CommonBallActor();
 
+  void Update(float delta_time) override;
+
  private:
-  GameX::Graphics::UStaticModel model_;
   GameX::Graphics::UEntity entity_;
 };
-}  // namespace GameBall
+}  // namespace GameBall::Actors

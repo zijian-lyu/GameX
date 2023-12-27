@@ -33,6 +33,8 @@ class World {
     return world_version_;
   }
 
+  void SyncWorldState(GameBall *app) const;
+
  private:
   friend ::GameBall::GameBall;
   friend ::GameBall::Logic::Manager;

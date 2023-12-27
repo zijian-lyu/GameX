@@ -5,7 +5,7 @@ namespace GameBall::Logic {
 class Obstacle : public Object {
  public:
   Obstacle(World *world);
-  ~Obstacle();
+  virtual ~Obstacle();
 
  private:
   uint64_t obstacle_id_;

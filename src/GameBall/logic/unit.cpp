@@ -3,7 +3,8 @@
 #include "GameBall/logic/world.h"
 
 namespace GameBall::Logic {
-Unit::Unit(World *world) : Object(world) {
+Unit::Unit(World *world, uint64_t player_id)
+    : Object(world), player_id_(player_id) {
   unit_id_ = world_->RegisterUnit(this);
 }
 
@@ -13,5 +14,9 @@ Unit::~Unit() {
 
 uint64_t Unit::UnitId() const {
   return unit_id_;
+}
+
+uint64_t Unit::PlayerId() const {
+  return player_id_;
 }
 }  // namespace GameBall::Logic

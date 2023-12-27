@@ -9,6 +9,8 @@ class Actor {
   ~Actor();
   uint64_t SyncedLogicWorldVersion() const;
 
+  virtual void Update(float delta_time){};
+
  protected:
   GameBall *app_;
   uint64_t synced_logic_world_version_{0};
