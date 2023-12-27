@@ -48,7 +48,7 @@ SYNC_ACTOR_FUNC(Block) {
   actor->SetMotion(position_, velocity_, rotation_, L_);
   if (ActorInitialize()) {
     actor->Entity()->SetAlbedoImage(app->AssetManager()->ImageFile(
-        "textures/CopperMemphis/CopperMemphis_2k_basecolor.png"));
+        "textures/floor_tiles_06_2k/floor_tiles_06_diff_2k.jpg"));
   }
 }
 
