@@ -38,6 +38,30 @@ class Application {
     return VkCore()->SwapChain()->Extent();
   }
 
+  virtual void CursorPosCallback(double xpos, double ypos) {
+  }
+
+  virtual void MouseButtonCallback(int button, int action, int mods) {
+  }
+
+  virtual void CursorEnterCallback(int entered) {
+  }
+
+  virtual void KeyCallback(int key, int scancode, int action, int mods) {
+  }
+
+  virtual void DropCallback(int count, const char **paths) {
+  }
+
+  virtual void ScrollCallback(double xoffset, double yoffset) {
+  }
+
+  virtual void FramebufferSizeCallback(int width, int height) {
+  }
+
+  virtual void WindowSizeCallback(int width, int height) {
+  }
+
  protected:
   void Init();
 

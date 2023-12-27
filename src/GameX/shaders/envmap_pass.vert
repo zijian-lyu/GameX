@@ -17,8 +17,10 @@ layout(location = 0) out vec3 ray_direction;
 
 void main() {
   gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
+  mat4 proj = camera_data.proj;
+  proj[0][0] = 1.0 / proj[0][0];
+  proj[1][1] = 1.0 / proj[1][1];
   ray_direction =
-      normalize((gl_Position * vec4(1.0, -1.0, 0.0, 1.0)) * camera_data.proj)
-          .xyz *
+      normalize((gl_Position * vec4(1.0, -1.0, 0.0, 1.0)) * proj).xyz *
       mat3(camera_data.view);
 }

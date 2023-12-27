@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameBall/core/asset_manager.h"
+#include "GameBall/core/camera_third_person.h"
 #include "GameBall/core/utils.h"
 #include "GameBall/logic/logic.h"
 
@@ -44,6 +45,8 @@ class GameBall : public GameX::Base::Application {
     return actors_.at(object_id);
   }
 
+  void CursorPosCallback(double xpos, double ypos) override;
+
  private:
   friend class Logic::Manager;
   friend class Logic::World;
@@ -59,5 +62,12 @@ class GameBall : public GameX::Base::Application {
   GameX::Graphics::UCamera camera_;
   GameX::Graphics::UAmbientLight ambient_light_;
   GameX::Graphics::UDirectionalLight directional_light_;
+
+  std::unique_ptr<CameraControllerThirdPerson> camera_controller_;
+
+  uint64_t primary_player_id_{0};
+  uint64_t primary_player_primary_unit_object_id_{0};
+
+  bool ignore_next_mouse_move_{true};
 };
 }  // namespace GameBall

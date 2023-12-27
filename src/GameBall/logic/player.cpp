@@ -21,5 +21,6 @@ uint64_t Player::PrimaryUnitId() const {
 }
 
 void Player::SetPrimaryUnit(uint64_t unit_id) {
+  primary_unit_id_ = unit_id;
 }
 }  // namespace GameBall::Logic

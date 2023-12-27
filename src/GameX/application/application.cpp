@@ -56,6 +56,63 @@ Application::Application(const ApplicationSettings &settings)
   vk_core_ = std::make_unique<grassland::vulkan::Core>(core_settings);
 
   renderer_ = std::make_unique<Graphics::Renderer>(this);
+
+  glfwSetWindowUserPointer(window_, this);
+
+  glfwSetCursorPosCallback(
+      window_, [](GLFWwindow *window, double xpos, double ypos) {
+        auto app =
+            reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+        app->CursorPosCallback(xpos, ypos);
+      });
+
+  glfwSetMouseButtonCallback(
+      window_, [](GLFWwindow *window, int button, int action, int mods) {
+        auto app =
+            reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+        app->MouseButtonCallback(button, action, mods);
+      });
+
+  glfwSetCursorEnterCallback(window_, [](GLFWwindow *window, int entered) {
+    auto app =
+        reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+    app->CursorEnterCallback(entered);
+  });
+
+  glfwSetKeyCallback(window_, [](GLFWwindow *window, int key, int scancode,
+                                 int action, int mods) {
+    auto app =
+        reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+    app->KeyCallback(key, scancode, action, mods);
+  });
+
+  glfwSetDropCallback(
+      window_, [](GLFWwindow *window, int count, const char **paths) {
+        auto app =
+            reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+        app->DropCallback(count, paths);
+      });
+
+  glfwSetScrollCallback(
+      window_, [](GLFWwindow *window, double xoffset, double yoffset) {
+        auto app =
+            reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+        app->ScrollCallback(xoffset, yoffset);
+      });
+
+  glfwSetFramebufferSizeCallback(
+      window_, [](GLFWwindow *window, int width, int height) {
+        auto app =
+            reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+        app->FramebufferSizeCallback(width, height);
+      });
+
+  glfwSetWindowSizeCallback(
+      window_, [](GLFWwindow *window, int width, int height) {
+        auto app =
+            reinterpret_cast<Application *>(glfwGetWindowUserPointer(window));
+        app->WindowSizeCallback(width, height);
+      });
 }
 
 Application::~Application() {

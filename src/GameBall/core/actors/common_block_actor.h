@@ -31,10 +31,8 @@ class CommonBlockActor : public Actor {
  private:
   GameX::Graphics::UEntity entity_;
   glm::mat3 transform_{1.0f};
-  glm::vec3 position_{};
   glm::vec3 velocity_{};
 
-  glm::mat3 rotation_{1.0f};
   glm::vec3 L_{0.0f};  // angular momentum
   glm::mat3 J_{1.0f};  // inertia tensor
   glm::mat3 J_inv_{1.0f};

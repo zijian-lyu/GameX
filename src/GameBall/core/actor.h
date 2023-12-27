@@ -16,9 +16,15 @@ class Actor {
 
   virtual void Update(float delta_time){};
 
+  glm::vec3 Position() const;
+
+  glm::mat3 Rotation() const;
+
  protected:
   friend class Logic::World;
   GameBall *app_;
   uint64_t synced_logic_world_version_{0};
+  glm::vec3 position_{};
+  glm::mat3 rotation_{1.0f};
 };
 }  // namespace GameBall
