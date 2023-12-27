@@ -1,5 +1,7 @@
 #pragma once
+#include "GameBall/core/asset_manager.h"
 #include "GameBall/core/utils.h"
+#include "GameBall/logic/logic.h"
 
 namespace GameBall {
 
@@ -18,17 +20,19 @@ class GameBall : public GameX::Base::Application {
 
   void OnCleanup() override;
 
+  class AssetManager *AssetManager() {
+    return asset_manager_.get();
+  }
+
+  GameX::Graphics::PScene Scene() {
+    return scene_.get();
+  }
+
  private:
   GameX::Graphics::UScene scene_;
   GameX::Graphics::UFilm film_;
-  GameX::Graphics::UStaticModel static_model_;
-  GameX::Graphics::UAnimatedModel animated_model_;
-  GameX::Graphics::UEntity static_entity_;
-  GameX::Graphics::UEntity animated_entity_;
-  GameX::Graphics::UCamera camera_;
-  GameX::Graphics::UImage moon_texture_;
-  GameX::Graphics::UImage envmap_texture_;
-  GameX::Graphics::UAmbientLight ambient_light_;
-  GameX::Graphics::UDirectionalLight directional_light_;
+  uint64_t synced_world_version_ = 0;
+  std::unique_ptr<Logic::Manager> logic_manager_;
+  std::unique_ptr<class AssetManager> asset_manager_;
 };
 }  // namespace GameBall

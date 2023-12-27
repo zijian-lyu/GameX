@@ -38,7 +38,7 @@ class Application {
     return VkCore()->SwapChain()->Extent();
   }
 
- private:
+ protected:
   void Init();
 
   void Update();

@@ -8,41 +8,20 @@ GameBall::GameBall(const GameSettings &settings)
   float aspect = static_cast<float>(extent.width) / extent.height;
   scene_ = Renderer()->CreateScene();
   film_ = Renderer()->CreateFilm(extent.width, extent.height);
-  static_model_ = Renderer()->CreateStaticModel("models/sphere.obj");
-  animated_model_ = Renderer()->CreateAnimatedModel("models/sphere.obj");
-  static_entity_ = scene_->CreateEntity(static_model_.get());
-  animated_entity_ = scene_->CreateEntity(animated_model_.get());
-  camera_ = scene_->CreateCamera(glm::vec3{0.0f, 0.0f, 5.0f},
-                                 glm::vec3{0.0f, 0.0f, 0.0f}, 45.0f, aspect,
-                                 1.0f, 10.0f);
-  ambient_light_ =
-      scene_->CreateLight<GameX::Graphics::AmbientLight>(glm::vec3{0.3f});
-  directional_light_ = scene_->CreateLight<GameX::Graphics::DirectionalLight>(
-      glm::vec3{0.7f}, glm::vec3{1.0f, 1.0f, 1.0f});
-
-  moon_texture_ = Renderer()->CreateImage("textures/2k_moon.jpg");
-  static_entity_->SetAlbedoImage(moon_texture_.get());
-
-  envmap_texture_ =
-      Renderer()->CreateImage("textures/air_museum_playground_2k.hdr");
-  scene_->SetEnvmapImage(envmap_texture_.get());
+  logic_manager_ = std::make_unique<Logic::Manager>();
+  asset_manager_ = std::make_unique<class AssetManager>(Renderer());
 }
 
 GameBall::~GameBall() {
-  ambient_light_.reset();
-  camera_.reset();
-  animated_entity_.reset();
-  static_entity_.reset();
-  animated_model_.reset();
-  static_model_.reset();
-  film_.reset();
+  asset_manager_.reset();
 }
 
 void GameBall::OnInit() {
-  for (auto &vertex : animated_model_->Vertices()) {
-    vertex.color = (vertex.position + 1.0f) * 0.5f;
-  }
-  animated_model_->SyncMeshData();
+  logic_manager_->Start();
+}
+
+void GameBall::OnCleanup() {
+  logic_manager_->Stop();
 }
 
 void GameBall::OnUpdate() {
@@ -55,24 +34,14 @@ void GameBall::OnUpdate() {
   static float omega = 0.0f;
 
   omega += glm::radians(90.0f) * delta_time;
-  static_entity_->SetAffineMatrix(
-      glm::translate(glm::mat4{1.0f}, glm::vec3{-0.5f, 0.0f, 0.0f}) *
-      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(1.0f, -1.0f, -1.0f)) *
-      glm::scale(glm::mat4{1.0f}, glm::vec3{0.5f}));
-  animated_entity_->SetAffineMatrix(
-      glm::translate(glm::mat4{1.0f}, glm::vec3{0.5f, 0.0f, 0.0f}) *
-      glm::rotate(glm::mat4(1.0f), omega, glm::vec3(1.0f, 1.0f, 1.0f)) *
-      glm::scale(glm::mat4{1.0f}, glm::vec3{0.5f}));
 }
 
 void GameBall::OnRender() {
   auto cmd_buffer = VkCore()->CommandBuffer();
-  Renderer()->RenderPipeline()->Render(cmd_buffer->Handle(), *scene_, *camera_,
-                                       *film_);
-
-  OutputImage(cmd_buffer->Handle(), film_->output_image.get());
-}
-
-void GameBall::OnCleanup() {
+  //  Renderer()->RenderPipeline()->Render(cmd_buffer->Handle(), *scene_,
+  //  *camera_,
+  //                                       *film_);
+  //
+  //  OutputImage(cmd_buffer->Handle(), film_->output_image.get());
 }
 }  // namespace GameBall
