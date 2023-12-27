@@ -10,7 +10,7 @@ envmap_data;
 
 layout(set = 1, binding = 1) uniform sampler2D envmap;
 
-layout(location = 0) out vec4 out_color;
+layout(location = 3) out vec4 out_color;
 
 void main() {
   vec3 direction = ray_direction;

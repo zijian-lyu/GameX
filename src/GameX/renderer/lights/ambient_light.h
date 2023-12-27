@@ -28,4 +28,6 @@ GAMEX_CLASS(AmbientLight) : public Light {
 
 grassland::vulkan::DescriptorSetLayout *AmbientLightDescriptorSetLayout(
     class Renderer *renderer);
+
+grassland::vulkan::Pipeline *AmbientLightPipeline(class Renderer *renderer);
 }  // namespace GameX::Graphics

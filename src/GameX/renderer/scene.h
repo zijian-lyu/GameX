@@ -71,6 +71,11 @@ GAMEX_CLASS(Scene) : public grassland::vulkan::DynamicObject {
   bool SyncData(VkCommandBuffer cmd_buffer, uint32_t frame_index) override;
 
  private:
+  struct EnvmapData {
+    float offset;
+    float exposure;
+  };
+
   class Renderer *renderer_;
 
   std::unique_ptr<grassland::vulkan::DescriptorPool> descriptor_pool_;
@@ -78,10 +83,17 @@ GAMEX_CLASS(Scene) : public grassland::vulkan::DynamicObject {
   std::set<Entity *> entities_;
   std::set<Light *> lights_;
 
-  Image *envmap_{};
+  Image *envmap_image_{};
   grassland::vulkan::Sampler *envmap_sampler_{};
+  std::unique_ptr<grassland::vulkan::DynamicBuffer<EnvmapData>>
+      envmap_data_buffer_;
   std::vector<uint64_t> envmap_versions_;
   uint64_t staging_envmap_version_{};
+  std::vector<std::unique_ptr<grassland::vulkan::DescriptorSet>>
+      envmap_descriptor_sets_;
 };
+
+grassland::vulkan::DescriptorSetLayout *EnvmapDescriptorSetLayout(
+    class Renderer *renderer);
 
 }  // namespace GameX::Graphics

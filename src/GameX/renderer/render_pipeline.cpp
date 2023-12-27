@@ -10,10 +10,9 @@ namespace GameX::Graphics {
 RenderPipeline::RenderPipeline(struct Renderer *renderer, int max_film)
     : renderer_(renderer) {
   CreateRenderPass();
+  CreateEnvmapPipeline();
   CreateGeometryPass();
   CreateLightingPassCommonAssets(max_film);
-  CreateAmbientLightPipeline();
-  CreateDirectionalLightPipeline();
 }
 
 std::unique_ptr<RenderPipeline::Film> RenderPipeline::CreateFilm(int width,
@@ -271,7 +270,7 @@ void RenderPipeline::CreateRenderPass() {
           {normal_attachment_index_, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL},
           {position_attachment_index_,
            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL},
-      },
+          {output_attachment_index_, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL}},
       std::optional<VkAttachmentReference>(
           {depth_attachment_index_,
            VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL}),
@@ -306,6 +305,41 @@ void RenderPipeline::CreateRenderPass() {
   render_pass_ = std::make_unique<grassland::vulkan::RenderPass>(
       renderer_->App()->VkCore(), attachment_descriptions, subpass_settings,
       dependencies);
+}
+
+void RenderPipeline::CreateEnvmapPipeline() {
+  envmap_vertex_shader_ = std::make_unique<grassland::vulkan::ShaderModule>(
+      renderer_->App()->VkCore(), BuiltInShaderSpv("envmap_pass.vert"));
+  envmap_fragment_shader_ = std::make_unique<grassland::vulkan::ShaderModule>(
+      renderer_->App()->VkCore(), BuiltInShaderSpv("envmap_pass.frag"));
+
+  envmap_pipeline_layout_ = std::make_unique<grassland::vulkan::PipelineLayout>(
+      renderer_->App()->VkCore(),
+      std::vector<grassland::vulkan::DescriptorSetLayout *>{
+          CameraDescriptorSetLayout(renderer_),
+          EnvmapDescriptorSetLayout(renderer_)});
+
+  grassland::vulkan::PipelineSettings envmap_pipeline_settings(
+      render_pass_.get(), envmap_pipeline_layout_.get());
+  envmap_pipeline_settings.AddShaderStage(envmap_vertex_shader_.get(),
+                                          VK_SHADER_STAGE_VERTEX_BIT);
+  envmap_pipeline_settings.AddShaderStage(envmap_fragment_shader_.get(),
+                                          VK_SHADER_STAGE_FRAGMENT_BIT);
+
+  envmap_pipeline_settings.SetPrimitiveTopology(
+      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+
+  envmap_pipeline_settings.SetMultiSampleState(VK_SAMPLE_COUNT_1_BIT);
+
+  envmap_pipeline_settings.SetCullMode(VK_CULL_MODE_BACK_BIT);
+
+  envmap_pipeline_settings.depth_stencil_state_create_info->depthTestEnable =
+      VK_FALSE;
+  envmap_pipeline_settings.depth_stencil_state_create_info->depthWriteEnable =
+      VK_FALSE;
+
+  envmap_pipeline_ = std::make_unique<grassland::vulkan::Pipeline>(
+      renderer_->App()->VkCore(), envmap_pipeline_settings);
 }
 
 void RenderPipeline::CreateGeometryPass() {
@@ -377,97 +411,4 @@ void RenderPipeline::CreateLightingPassCommonAssets(int max_film) {
           });
 }
 
-void RenderPipeline::CreateAmbientLightPipeline() {
-  ambient_light_vertex_shader_ =
-      std::make_unique<grassland::vulkan::ShaderModule>(
-          renderer_->App()->VkCore(),
-          BuiltInShaderSpv("fullscreen_lighting_pass.vert"));
-  ambient_light_fragment_shader_ =
-      std::make_unique<grassland::vulkan::ShaderModule>(
-          renderer_->App()->VkCore(), BuiltInShaderSpv("ambient_light.frag"));
-
-  ambient_light_pipeline_layout_ =
-      std::make_unique<grassland::vulkan::PipelineLayout>(
-          renderer_->App()->VkCore(),
-          std::vector<grassland::vulkan::DescriptorSetLayout *>{
-              lighting_pass_descriptor_set_layout_.get(),
-              AmbientLightDescriptorSetLayout(renderer_)});
-
-  grassland::vulkan::PipelineSettings ambient_light_pipeline_settings(
-      render_pass_.get(), ambient_light_pipeline_layout_.get(), 1);
-  ambient_light_pipeline_settings.AddShaderStage(
-      ambient_light_vertex_shader_.get(), VK_SHADER_STAGE_VERTEX_BIT);
-  ambient_light_pipeline_settings.AddShaderStage(
-      ambient_light_fragment_shader_.get(), VK_SHADER_STAGE_FRAGMENT_BIT);
-  ambient_light_pipeline_settings.SetPrimitiveTopology(
-      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-
-  ambient_light_pipeline_settings.SetMultiSampleState(VK_SAMPLE_COUNT_1_BIT);
-
-  ambient_light_pipeline_settings.SetCullMode(VK_CULL_MODE_NONE);
-
-  ambient_light_pipeline_settings.SetBlendState(
-      0, VkPipelineColorBlendAttachmentState{
-             VK_TRUE,
-             VK_BLEND_FACTOR_ONE,
-             VK_BLEND_FACTOR_ONE,
-             VK_BLEND_OP_ADD,
-             VK_BLEND_FACTOR_ONE,
-             VK_BLEND_FACTOR_ZERO,
-             VK_BLEND_OP_ADD,
-             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                 VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
-         });
-
-  ambient_light_pipeline_ = std::make_unique<grassland::vulkan::Pipeline>(
-      renderer_->App()->VkCore(), ambient_light_pipeline_settings);
-}
-
-void RenderPipeline::CreateDirectionalLightPipeline() {
-  directional_light_vertex_shader_ =
-      std::make_unique<grassland::vulkan::ShaderModule>(
-          renderer_->App()->VkCore(),
-          BuiltInShaderSpv("fullscreen_lighting_pass.vert"));
-  directional_light_fragment_shader_ =
-      std::make_unique<grassland::vulkan::ShaderModule>(
-          renderer_->App()->VkCore(),
-          BuiltInShaderSpv("directional_light.frag"));
-
-  directional_light_pipeline_layout_ =
-      std::make_unique<grassland::vulkan::PipelineLayout>(
-          renderer_->App()->VkCore(),
-          std::vector<grassland::vulkan::DescriptorSetLayout *>{
-              lighting_pass_descriptor_set_layout_.get(),
-              AmbientLightDescriptorSetLayout(renderer_)});
-
-  grassland::vulkan::PipelineSettings directional_light_pipeline_settings(
-      render_pass_.get(), directional_light_pipeline_layout_.get(), 1);
-  directional_light_pipeline_settings.AddShaderStage(
-      directional_light_vertex_shader_.get(), VK_SHADER_STAGE_VERTEX_BIT);
-  directional_light_pipeline_settings.AddShaderStage(
-      directional_light_fragment_shader_.get(), VK_SHADER_STAGE_FRAGMENT_BIT);
-  directional_light_pipeline_settings.SetPrimitiveTopology(
-      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-
-  directional_light_pipeline_settings.SetMultiSampleState(
-      VK_SAMPLE_COUNT_1_BIT);
-
-  directional_light_pipeline_settings.SetCullMode(VK_CULL_MODE_NONE);
-
-  directional_light_pipeline_settings.SetBlendState(
-      0, VkPipelineColorBlendAttachmentState{
-             VK_TRUE,
-             VK_BLEND_FACTOR_ONE,
-             VK_BLEND_FACTOR_ONE,
-             VK_BLEND_OP_ADD,
-             VK_BLEND_FACTOR_ONE,
-             VK_BLEND_FACTOR_ZERO,
-             VK_BLEND_OP_ADD,
-             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                 VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
-         });
-
-  directional_light_pipeline_ = std::make_unique<grassland::vulkan::Pipeline>(
-      renderer_->App()->VkCore(), directional_light_pipeline_settings);
-}
 }  // namespace GameX::Graphics

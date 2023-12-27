@@ -2,6 +2,7 @@
 
 #include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
+#include "GameX/shaders/shaders.h"
 
 namespace GameX::Graphics {
 DirectionalLight::DirectionalLight(Scene *scene,
@@ -49,7 +50,7 @@ DirectionalLight::~DirectionalLight() {
 }
 
 grassland::vulkan::Pipeline *DirectionalLight::LightingPipeline() {
-  return scene_->Renderer()->RenderPipeline()->DirectionalLightPipeline();
+  return DirectionalLightPipeline(scene_->Renderer());
 }
 
 void DirectionalLight::Lighting(VkCommandBuffer cmd_buffer, int frame_index) {
@@ -95,5 +96,61 @@ grassland::vulkan::DescriptorSetLayout *DirectionalLightDescriptorSetLayout(
     });
   }
   return directional_light_descriptor_set_layout;
+}
+
+grassland::vulkan::Pipeline *DirectionalLightPipeline(
+    struct Renderer *renderer) {
+  static std::map<Renderer *, PipelineAssets> ambient_light_pipelines;
+  auto &pipeline = ambient_light_pipelines[renderer];
+  if (!pipeline.pipeline) {
+    pipeline.vertex_shader = new grassland::vulkan::ShaderModule(
+        renderer->App()->VkCore(),
+        BuiltInShaderSpv("fullscreen_lighting_pass.vert"));
+    pipeline.fragment_shader = new grassland::vulkan::ShaderModule(
+        renderer->App()->VkCore(), BuiltInShaderSpv("directional_light.frag"));
+
+    pipeline.pipeline_layout = new grassland::vulkan::PipelineLayout(
+        renderer->App()->VkCore(),
+        std::vector<grassland::vulkan::DescriptorSetLayout *>{
+            renderer->RenderPipeline()->LightingPassDescriptorSetLayout(),
+            DirectionalLightDescriptorSetLayout(renderer)});
+
+    grassland::vulkan::PipelineSettings directional_light_pipeline_settings(
+        renderer->RenderPipeline()->RenderPass(), pipeline.pipeline_layout, 1);
+    directional_light_pipeline_settings.AddShaderStage(
+        pipeline.vertex_shader, VK_SHADER_STAGE_VERTEX_BIT);
+    directional_light_pipeline_settings.AddShaderStage(
+        pipeline.fragment_shader, VK_SHADER_STAGE_FRAGMENT_BIT);
+    directional_light_pipeline_settings.SetPrimitiveTopology(
+        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+
+    directional_light_pipeline_settings.SetMultiSampleState(
+        VK_SAMPLE_COUNT_1_BIT);
+
+    directional_light_pipeline_settings.SetCullMode(VK_CULL_MODE_NONE);
+
+    directional_light_pipeline_settings.SetBlendState(
+        0, VkPipelineColorBlendAttachmentState{
+               VK_TRUE,
+               VK_BLEND_FACTOR_ONE,
+               VK_BLEND_FACTOR_ONE,
+               VK_BLEND_OP_ADD,
+               VK_BLEND_FACTOR_ONE,
+               VK_BLEND_FACTOR_ZERO,
+               VK_BLEND_OP_ADD,
+               VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                   VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+           });
+
+    pipeline.pipeline = new grassland::vulkan::Pipeline(
+        renderer->App()->VkCore(), directional_light_pipeline_settings);
+    renderer->AddReleaseCallback([pipeline]() {
+      delete pipeline.pipeline;
+      delete pipeline.pipeline_layout;
+      delete pipeline.vertex_shader;
+      delete pipeline.fragment_shader;
+    });
+  }
+  return pipeline.pipeline;
 }
 }  // namespace GameX::Graphics

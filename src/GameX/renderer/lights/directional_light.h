@@ -32,4 +32,6 @@ GAMEX_CLASS(DirectionalLight) : public Light {
 
 grassland::vulkan::DescriptorSetLayout *DirectionalLightDescriptorSetLayout(
     class Renderer *renderer);
+
+grassland::vulkan::Pipeline *DirectionalLightPipeline(class Renderer *renderer);
 }  // namespace GameX::Graphics

@@ -2,6 +2,7 @@
 
 #include "GameX/application/application.h"
 #include "GameX/renderer/renderer.h"
+#include "GameX/shaders/shaders.h"
 
 namespace GameX::Graphics {
 AmbientLight::AmbientLight(struct Scene *scene,
@@ -53,7 +54,7 @@ AmbientLight::~AmbientLight() {
 }
 
 grassland::vulkan::Pipeline *AmbientLight::LightingPipeline() {
-  return scene_->Renderer()->RenderPipeline()->AmbientLightPipeline();
+  return AmbientLightPipeline(scene_->Renderer());
 }
 
 void AmbientLight::Lighting(VkCommandBuffer cmd_buffer, int frame_index) {
@@ -91,5 +92,59 @@ grassland::vulkan::DescriptorSetLayout *AmbientLightDescriptorSetLayout(
     return ambient_light_descriptor_set_layout;
   }
   return ambient_light_descriptor_set_layouts.at(renderer);
+}
+
+grassland::vulkan::Pipeline *AmbientLightPipeline(struct Renderer *renderer) {
+  static std::map<Renderer *, PipelineAssets> ambient_light_pipelines;
+  auto &pipeline = ambient_light_pipelines[renderer];
+  if (!pipeline.pipeline) {
+    pipeline.vertex_shader = new grassland::vulkan::ShaderModule(
+        renderer->App()->VkCore(),
+        BuiltInShaderSpv("fullscreen_lighting_pass.vert"));
+    pipeline.fragment_shader = new grassland::vulkan::ShaderModule(
+        renderer->App()->VkCore(), BuiltInShaderSpv("ambient_light.frag"));
+
+    pipeline.pipeline_layout = new grassland::vulkan::PipelineLayout(
+        renderer->App()->VkCore(),
+        std::vector<grassland::vulkan::DescriptorSetLayout *>{
+            renderer->RenderPipeline()->LightingPassDescriptorSetLayout(),
+            AmbientLightDescriptorSetLayout(renderer)});
+
+    grassland::vulkan::PipelineSettings ambient_light_pipeline_settings(
+        renderer->RenderPipeline()->RenderPass(), pipeline.pipeline_layout, 1);
+    ambient_light_pipeline_settings.AddShaderStage(pipeline.vertex_shader,
+                                                   VK_SHADER_STAGE_VERTEX_BIT);
+    ambient_light_pipeline_settings.AddShaderStage(
+        pipeline.fragment_shader, VK_SHADER_STAGE_FRAGMENT_BIT);
+    ambient_light_pipeline_settings.SetPrimitiveTopology(
+        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+
+    ambient_light_pipeline_settings.SetMultiSampleState(VK_SAMPLE_COUNT_1_BIT);
+
+    ambient_light_pipeline_settings.SetCullMode(VK_CULL_MODE_NONE);
+
+    ambient_light_pipeline_settings.SetBlendState(
+        0, VkPipelineColorBlendAttachmentState{
+               VK_TRUE,
+               VK_BLEND_FACTOR_ONE,
+               VK_BLEND_FACTOR_ONE,
+               VK_BLEND_OP_ADD,
+               VK_BLEND_FACTOR_ONE,
+               VK_BLEND_FACTOR_ZERO,
+               VK_BLEND_OP_ADD,
+               VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                   VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+           });
+
+    pipeline.pipeline = new grassland::vulkan::Pipeline(
+        renderer->App()->VkCore(), ambient_light_pipeline_settings);
+    renderer->AddReleaseCallback([pipeline]() {
+      delete pipeline.pipeline;
+      delete pipeline.pipeline_layout;
+      delete pipeline.vertex_shader;
+      delete pipeline.fragment_shader;
+    });
+  }
+  return pipeline.pipeline;
 }
 }  // namespace GameX::Graphics

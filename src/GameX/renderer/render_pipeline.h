@@ -32,24 +32,26 @@ class RenderPipeline {
               const Camera &cameras,
               const Film &film);
 
-  grassland::vulkan::Pipeline *AmbientLightPipeline() {
-    return ambient_light_pipeline_.get();
+  grassland::vulkan::DescriptorSetLayout *LightingPassDescriptorSetLayout() {
+    return lighting_pass_descriptor_set_layout_.get();
   }
 
-  grassland::vulkan::Pipeline *DirectionalLightPipeline() {
-    return directional_light_pipeline_.get();
+  grassland::vulkan::DescriptorPool *LightingPassDescriptorPool() {
+    return lighting_pass_descriptor_pool_.get();
+  }
+
+  grassland::vulkan::RenderPass *RenderPass() {
+    return render_pass_.get();
   }
 
  private:
   void CreateRenderPass();
 
+  void CreateEnvmapPipeline();
+
   void CreateGeometryPass();
 
   void CreateLightingPassCommonAssets(int max_film);
-
-  void CreateAmbientLightPipeline();
-
-  void CreateDirectionalLightPipeline();
 
   class Renderer *renderer_;
 
@@ -61,25 +63,15 @@ class RenderPipeline {
       geometry_pass_pipeline_layout_;
   std::unique_ptr<grassland::vulkan::Pipeline> geometry_pass_pipeline_;
 
-  std::unique_ptr<grassland::vulkan::ShaderModule> ambient_light_vertex_shader_;
-  std::unique_ptr<grassland::vulkan::ShaderModule>
-      ambient_light_fragment_shader_;
-  std::unique_ptr<grassland::vulkan::PipelineLayout>
-      ambient_light_pipeline_layout_;
-  std::unique_ptr<grassland::vulkan::Pipeline> ambient_light_pipeline_;
-
-  std::unique_ptr<grassland::vulkan::ShaderModule>
-      directional_light_vertex_shader_;
-  std::unique_ptr<grassland::vulkan::ShaderModule>
-      directional_light_fragment_shader_;
-  std::unique_ptr<grassland::vulkan::PipelineLayout>
-      directional_light_pipeline_layout_;
-  std::unique_ptr<grassland::vulkan::Pipeline> directional_light_pipeline_;
-
   std::unique_ptr<grassland::vulkan::DescriptorSetLayout>
       lighting_pass_descriptor_set_layout_;
   std::unique_ptr<grassland::vulkan::DescriptorPool>
       lighting_pass_descriptor_pool_;
+
+  std::unique_ptr<grassland::vulkan::ShaderModule> envmap_vertex_shader_;
+  std::unique_ptr<grassland::vulkan::ShaderModule> envmap_fragment_shader_;
+  std::unique_ptr<grassland::vulkan::PipelineLayout> envmap_pipeline_layout_;
+  std::unique_ptr<grassland::vulkan::Pipeline> envmap_pipeline_;
 
   uint32_t albedo_attachment_index_;
   uint32_t normal_attachment_index_;
@@ -91,4 +83,12 @@ class RenderPipeline {
 typedef RenderPipeline::Film Film;
 typedef std::unique_ptr<Film> UFilm;
 typedef Film *PFilm;
+
+struct PipelineAssets {
+  grassland::vulkan::Pipeline *pipeline;
+  grassland::vulkan::PipelineLayout *pipeline_layout;
+  grassland::vulkan::ShaderModule *vertex_shader;
+  grassland::vulkan::ShaderModule *fragment_shader;
+};
+
 }  // namespace GameX::Graphics

@@ -111,7 +111,6 @@ bool Entity::SyncData(VkCommandBuffer cmd_buffer, uint32_t frame_index) {
         &write_descriptor_set, 0, nullptr);
 
     albedo_image_versions_[frame_index] = staging_albedo_image_version_;
-    return true;
   }
   return false;
 }
