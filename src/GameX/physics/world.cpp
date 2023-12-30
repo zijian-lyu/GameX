@@ -42,7 +42,6 @@ Cube &World::GetCube(uint64_t id) {
 }
 
 void World::SolveCollisions() {
-  LAND_INFO("Solve Collisions...");
   std::vector<std::tuple<RigidBody *, RigidBody *, Collision>> collision_pairs;
 
   for (auto &sphere1 : spheres_) {
@@ -54,15 +53,12 @@ void World::SolveCollisions() {
       if (DetectCollision(sphere1.second, sphere2.second, collision)) {
         collision_pairs.emplace_back(&sphere1.second, &sphere2.second,
                                      collision);
-        LAND_INFO("Collision: sphere#{} sphere#{}", sphere1.first,
-                  sphere2.first);
       }
     }
     for (auto &cube : cubes_) {
       Collision collision;
       if (DetectCollision(sphere1.second, cube.second, collision)) {
         collision_pairs.emplace_back(&sphere1.second, &cube.second, collision);
-        LAND_INFO("Collision: sphere#{} cube#{}", sphere1.first, cube.first);
       }
     }
   }
@@ -85,7 +81,6 @@ void World::SolveCollisions() {
 }
 
 void World::ApplyGravity(float delta_time) {
-  LAND_INFO("Apply Gravity...");
   for (auto &sphere : spheres_) {
     sphere.second.velocity += sphere.second.gravity * delta_time;
   }

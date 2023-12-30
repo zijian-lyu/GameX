@@ -6,6 +6,8 @@ project(GameX)
 
 set(CMAKE_CXX_STANDARD 17)
 
+find_package(absl CONFIG REQUIRED)
+
 add_subdirectory(external/grassland)
 
 set(GAMEX_ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets)

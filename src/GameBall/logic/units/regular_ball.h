@@ -26,6 +26,11 @@ class RegularBall : public Unit {
                  const glm::mat3 &orientation = glm::mat3{1.0f},
                  const glm::vec3 &angular_momentum = glm::vec3{0.0f});
 
+  glm::vec3 Position() const;
+  glm::vec3 Velocity() const;
+  glm::mat3 Orientation() const;
+  glm::vec3 AngularMomentum() const;
+
  private:
   float radius_{1.0f};
   float mass_{1.0f};

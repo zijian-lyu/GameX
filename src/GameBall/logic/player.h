@@ -14,7 +14,7 @@ class Player {
 
   void SetPrimaryUnit(uint64_t unit_id);
 
-  void SetPlayerInput(const PlayerInput &input);
+  void SetInput(const PlayerInput &input);
 
   [[nodiscard]] PlayerInput GetPlayerInput() const;
 

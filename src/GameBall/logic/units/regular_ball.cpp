@@ -65,10 +65,10 @@ void RegularBall::UpdateTick() {
         moving_direction += right;
       }
       if (input.move_left) {
-        sphere.angular_velocity -= forward;
+        moving_direction -= forward;
       }
       if (input.move_right) {
-        sphere.angular_velocity += forward;
+        moving_direction += forward;
       }
 
       if (glm::length(moving_direction) > 0.0f) {
@@ -125,6 +125,22 @@ void RegularBall::SetMotion(const glm::vec3 &position,
   velocity_ = velocity;
   orientation_ = orientation;
   augular_momentum_ = angular_momentum;
+}
+
+glm::vec3 RegularBall::Position() const {
+  return position_;
+}
+
+glm::vec3 RegularBall::Velocity() const {
+  return velocity_;
+}
+
+glm::mat3 RegularBall::Orientation() const {
+  return orientation_;
+}
+
+glm::vec3 RegularBall::AngularMomentum() const {
+  return augular_momentum_;
 }
 
 }  // namespace GameBall::Logic::Units

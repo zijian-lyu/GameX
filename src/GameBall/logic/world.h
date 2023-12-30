@@ -89,11 +89,11 @@ class World {
     return 1.0f / 64.0f;
   }
 
+  void UpdateTick();
+
  private:
   friend ::GameBall::GameBall;
   friend ::GameBall::Logic::Manager;
-
-  void UpdateTick();
 
   std::unique_ptr<GameX::Physics::World> physics_world_;
   uint64_t next_object_id_{1};

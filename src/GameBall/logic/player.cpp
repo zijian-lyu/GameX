@@ -24,7 +24,7 @@ void Player::SetPrimaryUnit(uint64_t unit_id) {
   primary_unit_id_ = unit_id;
 }
 
-void Player::SetPlayerInput(const PlayerInput &input) {
+void Player::SetInput(const PlayerInput &input) {
   input_ = input;
 }
 

@@ -75,7 +75,7 @@ void World::UnregisterPlayer(uint64_t player_id) {
 }
 
 void World::UpdateTick() {
-  LAND_INFO("Update Tick... {}", world_version_);
+  // LAND_INFO("Update Tick... {}", world_version_);
 
   physics_world_->ApplyGravity(TickDeltaT());
 

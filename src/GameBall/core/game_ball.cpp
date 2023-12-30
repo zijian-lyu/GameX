@@ -45,10 +45,6 @@ void GameBall::OnInit() {
       glm::vec3{0.0f, -10.0f, 0.0f}, std::numeric_limits<float>::infinity(),
       false, 20.0f);
 
-  primary_unit->SetMotion(glm::vec3{0.0f, 1.0f, 0.0f},
-                          glm::vec3{0.0f, 10.0f, 0.0f}, glm::mat3{1.0f},
-                          glm::vec3{0.0f, 0.0f, 1.0f});
-
   primary_player_id_ = primary_player->PlayerId();
 
   primary_player->SetPrimaryUnit(primary_unit->UnitId());
@@ -103,7 +99,7 @@ void GameBall::OnUpdate() {
       if (primary_unit) {
         primary_player_primary_unit_object_id_ = primary_unit->ObjectId();
       }
-      primary_player->SetPlayerInput(player_input);
+      primary_player->SetInput(player_input);
     }
   }
 
