@@ -4,96 +4,87 @@
 #include "GameBall/logic/world.h"
 
 namespace GameBall::Logic::Obstacles {
-Block::Block(World *world,
-             const glm::mat4 &transform,
-             float weight,
-             bool gravity)
-    : Block(world,
-            glm::vec3(transform[3]),
-            weight,
-            gravity,
-            glm::mat3(transform)) {
-}
 
 Block::Block(World *world,
              glm::vec3 position,
-             float weight,
+             float mass,
              bool gravity,
-             glm::vec3 scale)
-    : Block(world,
-            position,
-            weight,
-            gravity,
-            glm::mat3{scale.x, 0.0f, 0.0f, 0.0f, scale.y, 0.0f, 0.0f, 0.0f,
-                      scale.z}) {
-}
-
-Block::Block(World *world,
-             glm::vec3 position,
-             float weight,
-             bool gravity,
-             const glm::mat3 &transform)
+             float side_length)
     : Obstacle(world),
       position_(position),
-      transform_(transform),
+      side_length_(side_length),
       gravity_(gravity ? glm::vec3{0.0f, -9.8f, 0.0f} : glm::vec3{0.0}),
-      weight_(weight) {
+      mass_(mass) {
+  auto physics_world = world_->PhysicsWorld();
+  cude_id_ = physics_world->CreateCube();
+  auto &cube = physics_world->GetCube(cude_id_);
+  SetGravity(gravity_);
+  SetMass(mass_);
+  SetSideLength(side_length_);
+  SetMotion(position_, velocity_, orientation_, L_);
+  cube.elasticity = 0.0f;
+  cube.friction = 0.5f;
 }
 
 SYNC_ACTOR_FUNC(Block) {
-  actor->SetTransform(transform_);
-  actor->SetWeight(weight_);
+  actor->SetTransform(glm::mat3{side_length_});
+  actor->SetMass(mass_);
   actor->SetInertiaTensor(J_);
   actor->SetGravity(gravity_);
-  actor->SetMotion(position_, velocity_, rotation_, L_);
+  actor->SetMotion(position_, velocity_, orientation_, L_);
   if (ActorInitialize()) {
     actor->Entity()->SetAlbedoImage(app->AssetManager()->ImageFile(
         "textures/floor_tiles_06_2k/floor_tiles_06_diff_2k.jpg"));
   }
 }
 
-void Block::SetMomentOfInertia(float moment_of_inertia) {
-  J_ = glm::mat3{moment_of_inertia};
-}
-
-void Block::SetInertiaTensor(const glm::mat3 &inertia_tensor) {
-  J_ = inertia_tensor;
-}
-
-void Block::SetWeight(float weight) {
-  weight_ = weight;
+void Block::SetMass(float mass) {
+  auto physics_world = world_->PhysicsWorld();
+  auto &cube = physics_world->GetCube(cude_id_);
+  mass_ = mass;
+  cube.SetSideLengthMass(side_length_, mass_);
+  J_ = cube.inertia;
 }
 
 void Block::SetGravity(const glm::vec3 &gravity) {
+  auto physics_world = world_->PhysicsWorld();
+  auto &cube = physics_world->GetCube(cude_id_);
   gravity_ = gravity;
-}
-
-void Block::SetTransform(const glm::mat3 &transform) {
-  transform_ = transform;
+  cube.gravity = gravity_;
 }
 
 void Block::SetMotion(const glm::vec3 &position,
                       const glm::vec3 &velocity,
-                      const glm::mat3 &rotation,
+                      const glm::mat3 &orientation,
                       const glm::vec3 &angular_momentum) {
-  rotation_ = rotation;
+  auto physics_world = world_->PhysicsWorld();
+  auto &cube = physics_world->GetCube(cude_id_);
+
+  orientation_ = orientation;
   position_ = position;
   velocity_ = velocity;
   L_ = angular_momentum;
+
+  cube.position = position_;
+  cube.velocity = velocity_;
+  cube.orientation = orientation_;
+  cube.angular_velocity = cube.inertia_inv * L_;
 }
 
 void Block::UpdateTick() {
-  auto delta_time = world_->TickDeltaT();
-  glm::vec3 acceleration = gravity_;
-  velocity_ += acceleration * delta_time;
-  position_ += velocity_ * delta_time;
+  auto physics_world = world_->PhysicsWorld();
+  auto &cube = physics_world->GetCube(cude_id_);
+  position_ = cube.position;
+  velocity_ = cube.velocity;
+  orientation_ = cube.orientation;
+  L_ = cube.inertia * cube.angular_velocity;
+}
 
-  glm::vec3 omega = rotation_ * glm::inverse(J_) * (L_ * rotation_);
-
-  float theta = glm::length(omega);
-  if (theta > 0.0f) {
-    rotation_ =
-        glm::mat3{glm::rotate(glm::mat4{1.0f}, theta, omega)} * rotation_;
-  }
+void Block::SetSideLength(float side_length) {
+  side_length_ = side_length;
+  auto physics_world = world_->PhysicsWorld();
+  auto &cube = physics_world->GetCube(cude_id_);
+  cube.SetSideLengthMass(side_length_, mass_);
+  J_ = cube.inertia;
 }
 }  // namespace GameBall::Logic::Obstacles

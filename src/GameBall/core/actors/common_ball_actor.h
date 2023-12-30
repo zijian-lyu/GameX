@@ -13,7 +13,7 @@ class CommonBallActor : public Actor {
 
   void SetInertiaTensor(const glm::mat3 &inertia_tensor);
 
-  void SetWeight(float weight);
+  void SetMass(float mass);
 
   void SetGravity(const glm::vec3 &gravity);
 
@@ -38,6 +38,6 @@ class CommonBallActor : public Actor {
   glm::mat3 J_inv_{1.0f};
 
   glm::vec3 gravity_{};
-  float weight_{};
+  float mass_{};
 };
 }  // namespace GameBall::Actors

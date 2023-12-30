@@ -13,7 +13,7 @@ class CommonBlockActor : public Actor {
 
   void SetInertiaTensor(const glm::mat3 &inertia_tensor);
 
-  void SetWeight(float weight);
+  void SetMass(float weight);
 
   void SetGravity(const glm::vec3 &gravity);
 

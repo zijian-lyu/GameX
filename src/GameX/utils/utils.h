@@ -7,4 +7,8 @@
 #include "GameX/utils/metronome.h"
 #include "GameX/utils/vertex.h"
 
-namespace GameX::Base {}
+namespace GameX::Base {
+glm::mat3 Rotate(const glm::vec3 &axis, float radians);
+
+glm::mat3 Rotate(const glm::vec3 &rotation);
+}  // namespace GameX::Base

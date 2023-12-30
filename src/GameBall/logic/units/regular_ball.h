@@ -9,9 +9,8 @@ class RegularBall : public Unit {
   RegularBall(World *world,
               uint64_t player_id,
               const glm::vec3 &position,
-              float scale = 1.0f,
-              float weight = 1.0f,
-              float J = 1.0f);
+              float radius = 1.0f,
+              float mass = 1.0f);
 
   ~RegularBall();
 
@@ -19,13 +18,21 @@ class RegularBall : public Unit {
 
   void UpdateTick() override;
 
+  void SetMass(float mass);
+  void SetGravity(const glm::vec3 &gravity);
+  void SetRadius(float radius);
+  void SetMotion(const glm::vec3 &position = glm::vec3{0.0f},
+                 const glm::vec3 &velocity = glm::vec3{0.0f},
+                 const glm::mat3 &orientation = glm::mat3{1.0f},
+                 const glm::vec3 &angular_momentum = glm::vec3{0.0f});
+
  private:
-  float scale_{1.0f};
-  float weight_{1.0f};
+  float radius_{1.0f};
+  float mass_{1.0f};
   glm::vec3 position_{};
   glm::vec3 velocity_{};
-  glm::mat3 rotation_{1.0f};
-  glm::vec3 L_{};
-  float J_{1.0f};  // moment of inertia
+  glm::mat3 orientation_{1.0f};
+  glm::vec3 augular_momentum_{};
+  uint64_t sphere_id_{};
 };
 }  // namespace GameBall::Logic::Units

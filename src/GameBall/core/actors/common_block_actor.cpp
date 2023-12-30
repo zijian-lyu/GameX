@@ -37,7 +37,7 @@ void CommonBlockActor::SetInertiaTensor(const glm::mat3 &inertia_tensor) {
   J_inv_ = glm::inverse(inertia_tensor);
 }
 
-void CommonBlockActor::SetWeight(float weight) {
+void CommonBlockActor::SetMass(float weight) {
   weight_ = weight;
 }
 

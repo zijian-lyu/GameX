@@ -37,10 +37,13 @@ void GameBall::OnInit() {
 
   auto primary_player = world->CreatePlayer();
   auto primary_unit = world->CreateUnit<Logic::Units::RegularBall>(
-      primary_player->PlayerId(), glm::vec3{0.0f, 1.0f, 0.0f}, 1.0f, 1.0f,
-      1.0f);
+      primary_player->PlayerId(), glm::vec3{0.0f, 1.0f, 0.0f}, 1.0f, 1.0f);
   auto primary_obstacle = world->CreateObstacle<Logic::Obstacles::Block>(
-      glm::vec3{0.0f, -5.0f, 0.0f}, 1.0f, false, glm::vec3{10.0f});
+      glm::vec3{0.0f, -10.0f, 0.0f}, std::numeric_limits<float>::infinity(),
+      false, 20.0f);
+
+  primary_unit->SetMotion(glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec3{0.0f},
+                          glm::mat3{1.0f}, glm::vec3{0.0f, 0.0f, 1.0f});
 
   primary_player_id_ = primary_player->PlayerId();
 

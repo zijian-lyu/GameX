@@ -40,8 +40,8 @@ void CommonBallActor::SetInertiaTensor(const glm::mat3 &inertia_tensor) {
   J_inv_ = glm::inverse(inertia_tensor);
 }
 
-void CommonBallActor::SetWeight(float weight) {
-  weight_ = weight;
+void CommonBallActor::SetMass(float mass) {
+  mass_ = mass;
 }
 
 void CommonBallActor::SetGravity(const glm::vec3 &gravity) {
