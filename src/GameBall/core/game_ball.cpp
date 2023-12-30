@@ -36,8 +36,11 @@ void GameBall::OnInit() {
   directional_light_->SetLight(glm::vec3{1.0f}, glm::vec3{3.0f, 2.0f, 1.0f});
 
   auto primary_player = world->CreatePlayer();
+  auto enemy_player = world->CreatePlayer();
   auto primary_unit = world->CreateUnit<Logic::Units::RegularBall>(
       primary_player->PlayerId(), glm::vec3{0.0f, 1.0f, 0.0f}, 1.0f, 1.0f);
+  auto enemy_unit = world->CreateUnit<Logic::Units::RegularBall>(
+      enemy_player->PlayerId(), glm::vec3{-5.0f, 1.0f, 0.0f}, 1.0f, 1.0f);
   auto primary_obstacle = world->CreateObstacle<Logic::Obstacles::Block>(
       glm::vec3{0.0f, -10.0f, 0.0f}, std::numeric_limits<float>::infinity(),
       false, 20.0f);

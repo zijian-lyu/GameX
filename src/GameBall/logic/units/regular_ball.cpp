@@ -21,7 +21,7 @@ RegularBall::RegularBall(World *world,
   sphere.orientation = orientation_;
   sphere.velocity = velocity_;
   sphere.angular_velocity = glm::vec3{0.0f};
-  sphere.elasticity = 0.5f;
+  sphere.elasticity = 0.0f;
   sphere.friction = 0.5f;
   sphere.gravity = glm::vec3{0.0f, -9.8f, 0.0f};
 }
