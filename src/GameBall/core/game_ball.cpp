@@ -45,8 +45,9 @@ void GameBall::OnInit() {
       glm::vec3{0.0f, -10.0f, 0.0f}, std::numeric_limits<float>::infinity(),
       false, 20.0f);
 
-  primary_unit->SetMotion(glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec3{0.0f},
-                          glm::mat3{1.0f}, glm::vec3{0.0f, 0.0f, 1.0f});
+  primary_unit->SetMotion(glm::vec3{0.0f, 1.0f, 0.0f},
+                          glm::vec3{0.0f, 10.0f, 0.0f}, glm::mat3{1.0f},
+                          glm::vec3{0.0f, 0.0f, 1.0f});
 
   primary_player_id_ = primary_player->PlayerId();
 
@@ -59,6 +60,9 @@ void GameBall::OnInit() {
                                  0.1f, 100.0f);
   camera_controller_ =
       std::make_unique<CameraControllerThirdPerson>(camera_.get(), aspect);
+
+  player_input_controller_ =
+      std::make_unique<Logic::PlayerInputController>(this);
 
   logic_manager_->Start();
 }
@@ -86,6 +90,8 @@ void GameBall::OnUpdate() {
                          .count();
   last_time = current_time;
 
+  auto player_input = player_input_controller_->GetInput();
+
   {
     std::lock_guard<std::mutex> lock(logic_manager_->logic_mutex_);
     logic_manager_->world_->SyncWorldState(this);
@@ -97,6 +103,7 @@ void GameBall::OnUpdate() {
       if (primary_unit) {
         primary_player_primary_unit_object_id_ = primary_unit->ObjectId();
       }
+      primary_player->SetPlayerInput(player_input);
     }
   }
 

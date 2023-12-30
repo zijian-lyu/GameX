@@ -23,4 +23,18 @@ uint64_t Player::PrimaryUnitId() const {
 void Player::SetPrimaryUnit(uint64_t unit_id) {
   primary_unit_id_ = unit_id;
 }
+
+void Player::SetPlayerInput(const PlayerInput &input) {
+  input_ = input;
+}
+
+PlayerInput Player::GetPlayerInput() const {
+  return input_;
+}
+
+PlayerInput Player::TakePlayerInput() {
+  auto input = input_;
+  input_ = {};
+  return input;
+}
 }  // namespace GameBall::Logic

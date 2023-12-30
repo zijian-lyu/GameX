@@ -22,7 +22,7 @@ Block::Block(World *world,
   SetMass(mass_);
   SetSideLength(side_length_);
   SetMotion(position_, velocity_, orientation_, L_);
-  cube.elasticity = 0.0f;
+  cube.elasticity = 0.25f;
   cube.friction = 0.5f;
 }
 

@@ -47,13 +47,17 @@ class GameBall : public GameX::Base::Application {
 
   void CursorPosCallback(double xpos, double ypos) override;
 
+  CameraControllerThirdPerson *CameraController() {
+    return camera_controller_.get();
+  }
+
  private:
   friend class Logic::Manager;
   friend class Logic::World;
 
   GameX::Graphics::UScene scene_;
   GameX::Graphics::UFilm film_;
-  uint64_t synced_world_version_ = 0;
+  uint64_t synced_world_version_{0};
   std::unique_ptr<Logic::Manager> logic_manager_;
   std::unique_ptr<class AssetManager> asset_manager_;
   std::map<uint64_t, Actor *> actors_;
@@ -69,5 +73,7 @@ class GameBall : public GameX::Base::Application {
   uint64_t primary_player_primary_unit_object_id_{0};
 
   bool ignore_next_mouse_move_{true};
+
+  std::unique_ptr<Logic::PlayerInputController> player_input_controller_;
 };
 }  // namespace GameBall

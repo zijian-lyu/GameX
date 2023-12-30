@@ -1,5 +1,6 @@
 #pragma once
 #include "GameBall/core/utils.h"
+#include "GameBall/logic/player_input.h"
 
 namespace GameBall::Logic {
 class World;
@@ -13,10 +14,18 @@ class Player {
 
   void SetPrimaryUnit(uint64_t unit_id);
 
+  void SetPlayerInput(const PlayerInput &input);
+
+  [[nodiscard]] PlayerInput GetPlayerInput() const;
+
+  PlayerInput TakePlayerInput();
+
  private:
   World *world_;
   uint64_t player_id_{};
 
   uint64_t primary_unit_id_{};
+
+  PlayerInput input_{};
 };
 }  // namespace GameBall::Logic
